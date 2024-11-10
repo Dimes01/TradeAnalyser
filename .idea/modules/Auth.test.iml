@@ -16,6 +16,9 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-security:3.3.4" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-validation:3.3.4" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-test:3.3.4" level="project" />
+    <orderEntry type="library" name="Gradle: jakarta.xml.bind:jakarta.xml.bind-api:4.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.jsonwebtoken:jjwt-api:0.12.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.security:spring-security-test:6.3.3" level="project" />
     <orderEntry type="library" name="Gradle: org.testcontainers:postgresql:1.19.8" level="project" />
     <orderEntry type="library" name="Gradle: org.testcontainers:junit-jupiter:1.20.2" level="project" />
     <orderEntry type="library" name="Gradle: org.testcontainers:testcontainers:1.20.2" level="project" />
@@ -38,7 +41,6 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test-autoconfigure:3.3.4" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test:3.3.4" level="project" />
     <orderEntry type="library" name="Gradle: com.jayway.jsonpath:json-path:2.9.0" level="project" />
-    <orderEntry type="library" name="Gradle: jakarta.xml.bind:jakarta.xml.bind-api:4.0.2" level="project" />
     <orderEntry type="library" name="Gradle: net.minidev:json-smart:2.5.1" level="project" />
     <orderEntry type="library" name="Gradle: org.assertj:assertj-core:3.25.3" level="project" />
     <orderEntry type="library" name="Gradle: org.awaitility:awaitility:4.2.2" level="project" />
@@ -49,6 +51,8 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-test:6.1.13" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-core:6.1.13" level="project" />
     <orderEntry type="library" name="Gradle: org.xmlunit:xmlunit-core:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: jakarta.activation:jakarta.activation-api:2.1.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.security:spring-security-core:6.3.3" level="project" />
     <orderEntry type="library" name="Gradle: org.testcontainers:jdbc:1.19.8" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.13.2" level="project" />
     <orderEntry type="library" name="Gradle: com.github.docker-java:docker-java-api:3.4.0" level="project" />
@@ -81,16 +85,15 @@
     <orderEntry type="library" name="Gradle: org.antlr:antlr4-runtime:4.13.0" level="project" />
     <orderEntry type="library" name="Gradle: jakarta.persistence:jakarta.persistence-api:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: jakarta.transaction:jakarta.transaction-api:2.0.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.springframework.security:spring-security-core:6.3.3" level="project" />
     <orderEntry type="library" name="Gradle: jakarta.validation:jakarta.validation-api:3.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jboss.logging:jboss-logging:3.5.3.Final" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml:classmate:1.7.0" level="project" />
-    <orderEntry type="library" name="Gradle: jakarta.activation:jakarta.activation-api:2.1.3" level="project" />
     <orderEntry type="library" name="Gradle: net.minidev:accessors-smart:2.5.1" level="project" />
     <orderEntry type="library" name="Gradle: net.bytebuddy:byte-buddy:1.14.19" level="project" />
     <orderEntry type="library" name="Gradle: net.bytebuddy:byte-buddy-agent:1.14.19" level="project" />
     <orderEntry type="library" name="Gradle: com.vaadin.external.google:android-json:0.0.20131108.vaadin1" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-jcl:6.1.13" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.security:spring-security-crypto:6.3.3" level="project" />
     <orderEntry type="library" name="Gradle: org.testcontainers:database-commons:1.19.8" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:2.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.17.2" level="project" />
@@ -105,10 +108,11 @@
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-to-slf4j:2.23.1" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:jul-to-slf4j:2.0.16" level="project" />
     <orderEntry type="library" name="Gradle: io.micrometer:micrometer-commons:1.13.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.springframework.security:spring-security-crypto:6.3.3" level="project" />
     <orderEntry type="library" name="Gradle: org.ow2.asm:asm:9.6" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-core:1.5.8" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.23.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-impl:0.12.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-jackson:0.12.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.postgresql:postgresql:42.7.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.checkerframework:checker-qual:3.42.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.junit.jupiter:junit-jupiter-engine:5.10.3" level="project" />
