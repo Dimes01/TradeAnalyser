@@ -1,5 +1,7 @@
 package org.example.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.dto.JwtRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AuthControllerTest {
+    private final JwtRequest jwtRequest = new JwtRequest("user", "1234");
+    private final ObjectMapper utilMapper = new ObjectMapper();
 
     @Autowired
     private MockMvc mockMvc;
@@ -30,11 +34,7 @@ public class AuthControllerTest {
 
     @Test
     public void login() throws Exception {
-        String authRequest = """
-            {
-                "login": "anton",
-                "password": "1234"
-            }""";
+        String authRequest = utilMapper.writeValueAsString(jwtRequest);
 
         mockMvc.perform(post("/api/auth/login")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
