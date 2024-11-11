@@ -9,6 +9,8 @@ import org.example.dto.JwtResponse;
 import org.example.entities.User;
 import org.example.utilities.JwtAuthentication;
 import org.example.utilities.JwtProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +20,26 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
     private final UserService userService;
     private final Map<String, String> refreshStorage;
     private final JwtProvider jwtProvider;
 
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
+        logger.info("Method 'login': start");
         User user = userService.getByLogin(authRequest.getLogin())
-            .orElseThrow(() -> new AuthException("Пользователь не найден"));
+            .orElseThrow(() -> {
+                logger.error("Method 'login': user not found");
+                return new AuthException("Пользователь не найден");
+            });
         if (user.getPassword().equals(authRequest.getPassword())) {
             String accessToken = jwtProvider.generateAccessToken(user);
             String refreshToken = jwtProvider.generateRefreshToken(user);
             refreshStorage.put(user.getLogin(), refreshToken);
+            logger.info("Method 'login': finish");
             return new JwtResponse(accessToken, refreshToken);
         } else {
+            logger.error("Method 'login': wrong password");
             throw new AuthException("Неправильный пароль");
         }
     }

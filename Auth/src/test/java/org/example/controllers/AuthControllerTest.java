@@ -1,7 +1,10 @@
 package org.example.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.JwtRequest;
+import org.example.dto.JwtResponse;
+import org.example.dto.RefreshJwtRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,48 +37,75 @@ public class AuthControllerTest {
 
     }
 
+    private JwtResponse getTokens(JwtRequest request) throws Exception {
+        String authRequest = utilMapper.writeValueAsString(request);
+
+        String responseString = mockMvc.perform(post("/api/auth/login")
+                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                .with(SecurityMockMvcRequestPostProcessors.user("user"))
+                .content(authRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andReturn().getResponse().getContentAsString();
+
+        return utilMapper.readValue(responseString, JwtResponse.class);
+    }
+
     @Test
     public void login() throws Exception {
+        // Arrange
         String authRequest = utilMapper.writeValueAsString(jwtRequest);
 
+        // Act & Assert
         mockMvc.perform(post("/api/auth/login")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
                 .with(SecurityMockMvcRequestPostProcessors.user("user"))
                 .content(authRequest)
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andDo(print());
+            .andExpect(status().isOk());
     }
 
     @Test
     public void getNewAccessToken() throws Exception {
-        String request = """
-            {
-                "refreshToken": ""
-            }""";
+        // Arrange
+        JwtResponse tokensBefore = getTokens(jwtRequest);
+        RefreshJwtRequest request = new RefreshJwtRequest(tokensBefore.getRefreshToken());
+        String requestString = utilMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/api/auth/token")
+        // Act
+        String responseString = mockMvc.perform(post("/api/auth/token")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
                 .with(SecurityMockMvcRequestPostProcessors.user("user"))
-                .content(request)
+                .content(requestString)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andDo(print());
+            .andReturn().getResponse().getContentAsString();
+        JwtResponse tokensAfter = utilMapper.readValue(responseString, JwtResponse.class);
+
+        // Assert
+        assertEquals(tokensBefore.getRefreshToken(), tokensAfter.getRefreshToken());
+        assertNotEquals(tokensBefore.getAccessToken(), tokensAfter.getAccessToken());
     }
+
 
     @Test
     public void getNewRefreshToken() throws Exception {
-        String request = """
-            {
-                "refreshToken": ""
-            }""";
+        // Arrange
+        JwtResponse tokensBefore = getTokens(jwtRequest);
+        RefreshJwtRequest request = new RefreshJwtRequest(tokensBefore.getRefreshToken());
+        String requestString = utilMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/api/auth/refresh")
+        // Act
+        String responseString = mockMvc.perform(post("/api/auth/refresh")
                 .with(SecurityMockMvcRequestPostProcessors.csrf())
                 .with(SecurityMockMvcRequestPostProcessors.user("user"))
-                .content(request)
+                .content(requestString)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andDo(print());
+            .andReturn().getResponse().getContentAsString();
+        JwtResponse tokensAfter = utilMapper.readValue(responseString, JwtResponse.class);
+
+        // Assert
+        assertNotEquals(tokensBefore.getRefreshToken(), tokensAfter.getRefreshToken());
+        assertNotEquals(tokensBefore.getAccessToken(), tokensAfter.getAccessToken());
     }
 }

@@ -9,6 +9,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtRequest {
+
+    @NotBlank
     private String login;
+
+    @NotBlank
     private String password;
 }
