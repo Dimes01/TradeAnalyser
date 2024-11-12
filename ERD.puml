@@ -1,0 +1,52 @@
+@startchen
+!pragma layout smetana
+
+entity User {
+    login
+    password
+    firstName
+    lastName
+    roles
+}
+entity Client_App {
+}
+entity Data_Service {
+}
+entity Analyse_Service {
+}
+
+relationship Sign_In {
+    login
+    password
+}
+relationship Sign_Up {
+    login
+    password
+    firstName
+    lastName
+}
+relationship Request_Info {
+    Start time
+    End time
+    Candle interval
+}
+relationship Response_Info {
+    Coefficient of variation
+    Sharpe ratio
+    Information ratio
+    Sortino ratio
+    Treynor ratio
+}
+
+
+User -1- Sign_In
+Sign_In -1- Client_App
+User -1- Sign_Up
+Sign_Up -1- Client_App
+
+Client_App -N- Request_Info
+Request_Info -1- Data_Service
+Client_App -N- Response_Info
+Response_Info -1- Data_Service
+
+@endchen

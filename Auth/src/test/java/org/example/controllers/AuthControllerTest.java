@@ -7,6 +7,7 @@ import org.example.dto.JwtResponse;
 import org.example.dto.RefreshJwtRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +31,7 @@ public class AuthControllerTest {
     private final ObjectMapper utilMapper = new ObjectMapper();
 
     @Autowired
+    @InjectMocks
     private MockMvc mockMvc;
 
     @BeforeEach

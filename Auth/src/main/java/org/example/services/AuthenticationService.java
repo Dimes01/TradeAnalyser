@@ -33,6 +33,7 @@ public class AuthenticationService {
                 return new AuthException("Пользователь не найден");
             });
         if (user.getPassword().equals(authRequest.getPassword())) {
+            logger.debug("Method 'login': password is correct");
             String accessToken = jwtProvider.generateAccessToken(user);
             String refreshToken = jwtProvider.generateRefreshToken(user);
             refreshStorage.put(user.getLogin(), refreshToken);
@@ -45,34 +46,50 @@ public class AuthenticationService {
     }
 
     public JwtResponse getAccessToken(@NonNull String refreshToken) throws AuthException {
+        logger.info("Method 'getAccessToken': start");
         if (jwtProvider.validateRefreshToken(refreshToken)) {
+            logger.debug("Method 'getAccessToken': refresh token is valid");
             Claims claims = jwtProvider.getRefreshClaims(refreshToken);
             String login = claims.getSubject();
             String saveRefreshToken = refreshStorage.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
+                logger.debug("Method 'getAccessToken': refresh token from storage is valid");
                 User user = userService.getByLogin(login)
-                    .orElseThrow(() -> new AuthException("Пользователь не найден"));
-                String accessToken = jwtProvider.generateAccessToken(user);
-                return new JwtResponse(accessToken, null);
+                    .orElseThrow(() -> {
+                        logger.error("Method 'getAccessToken': user not found");
+                        return new AuthException("Пользователь не найден");
+                    });
+                String newAccessToken = jwtProvider.generateAccessToken(user);
+                logger.info("Method 'getAccessToken': finish with new access token");
+                return new JwtResponse(newAccessToken, refreshToken);
             }
         }
+        logger.info("Method 'getAccessToken': finish with null tokens");
         return new JwtResponse(null, null);
     }
 
     public JwtResponse refresh(@NonNull String refreshToken) throws AuthException {
+        logger.info("Method 'refresh': start");
         if (jwtProvider.validateRefreshToken(refreshToken)) {
+            logger.debug("Method 'refresh': refresh token is valid");
             Claims claims = jwtProvider.getRefreshClaims(refreshToken);
             String login = claims.getSubject();
             String saveRefreshToken = refreshStorage.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
+                logger.debug("Method 'refresh': refresh token from storage is valid");
                 User user = userService.getByLogin(login)
-                    .orElseThrow(() -> new AuthException("Пользователь не найден"));
-                String accessToken = jwtProvider.generateAccessToken(user);
+                    .orElseThrow(() -> {
+                        logger.error("Method 'refresh': user not found");
+                        return new AuthException("Пользователь не найден");
+                    });
+                String newAccessToken = jwtProvider.generateAccessToken(user);
                 String newRefreshToken = jwtProvider.generateRefreshToken(user);
                 refreshStorage.put(user.getLogin(), newRefreshToken);
-                return new JwtResponse(accessToken, newRefreshToken);
+                logger.info("Method 'refresh': finish with new tokens");
+                return new JwtResponse(newAccessToken, newRefreshToken);
             }
         }
+        logger.info("Method 'refresh': finish with null tokens");
         throw new AuthException("Невалидный JWT токен");
     }
 
