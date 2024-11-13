@@ -1,0 +1,125 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package "DTO" {
+    class PortfolioRequest {
+        account_id: String
+        currency: CurrencyRequest
+    }
+    enum CurrencyRequest {
+        + RUB
+        + USD
+        + EUR
+    }
+    class PortfolioResponse {
+        - total_amount_shares: MoneyValue
+        - total_amount_bonds: MoneyValue
+        - total_amount_etf: MoneyValue
+        - total_amount_currencies: MoneyValue
+        - total_amount_futures: MoneyValue
+        - expected_yield: Quotation
+        - positions: PortfolioPosition[]
+        - account_id: string
+        - total_amount_options: MoneyValue
+        - total_amount_sp: MoneyValue
+        - total_amount_portfolio: MoneyValue
+        - virtual_positions: VirtualPortfolioPosition[]
+    }
+    class PortfolioPosition {
+        - figi: string
+        - instrument_type: string
+        - quantity: Quotation
+        - average_position_price: MoneyValue
+        - expected_yield: Quotation
+        - current_nkd: MoneyValue
+        - current_price: MoneyValue
+        - average_position_price_fifo: MoneyValue
+        - blocked: bool
+        - blocked_lots: Quotation
+        - position_uid: string
+        - instrument_uid: string
+        - var_margin: MoneyValue
+        - expected_yield_fifo: Quotation
+    }
+    class MoneyValue {
+        - currency: String
+        - units: int64
+        - nano: int32
+        + Quotation()
+        + getCurrency(): String
+        + getUnits(): int64
+        + getNano(): int32
+        + setCurrency(currency: String)
+        + setUnits(units: int64)
+        + setNano(nano: int32)
+    }
+    class Quotation {
+        - units: int64
+        - nano: int32
+        + Quotation()
+        + getUnits(): int64
+        + getNano(): int32
+        + setUnits(units: int64)
+        + setNano(nano: int32)
+    }
+
+    PortfolioResponse o-- MoneyValue
+    PortfolioResponse o-- PortfolioPosition
+    PortfolioPosition o-- MoneyValue
+    PortfolioPosition o-- Quotation
+    PortfolioResponse o-- Quotation
+    PortfolioRequest o-- CurrencyRequest
+
+}
+
+package "Services" {
+    class AnalyseService {
+        + calculateProfitability(Quotation)
+        + calculateSharpRatio()
+    }
+}
+
+package "Old DTO" {
+    class GetLastPricesRequest {
+        - figi: String[]
+        - instrument_id: String[]
+        - last_price_type: LastPriceType
+        +GetLastPricesRequest()
+    }
+    class GetLastPricesResponse {
+        - last_prices: LastPrice[]
+        + GetLastPricesResponse()
+    }
+    class LastPrice {
+        - figi: string
+        - price: Quotation
+        - time: Instant
+        - instrument_uid: string
+        - last_price_type: LastPriceType
+        + LastPrice()
+    }
+    class Quotation {
+        - units: int64
+        - nano: int32
+        + Quotation()
+        + getUnits(): int64
+        + getNano(): int32
+        + setUnits(units: int64)
+        + setNano(nano: int32)
+    }
+
+    enum LastPriceType {
+        + LAST_PRICE_UNSPECIFIED
+        + LAST_PRICE_EXCHANGE
+        + LAST_PRICE_DEALER
+    }
+
+    GetLastPricesRequest o-- LastPriceType
+    GetLastPricesResponse o-- LastPrice
+    LastPrice o-- LastPriceType
+    LastPrice o-- Quotation
+}
+
+
+
+@enduml

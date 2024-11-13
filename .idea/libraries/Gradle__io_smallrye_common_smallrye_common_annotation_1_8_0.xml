@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: io.smallrye.common:smallrye-common-annotation:1.8.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="io.smallrye.common" artifactId="smallrye-common-annotation" version="1.8.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.smallrye.common/smallrye-common-annotation/1.8.0/facd18631db871ba734f05e4195f9fb2e055dacc/smallrye-common-annotation-1.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

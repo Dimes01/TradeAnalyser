@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Auth/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/Auth/build" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="graalvm-jdk-21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

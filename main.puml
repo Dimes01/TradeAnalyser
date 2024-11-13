@@ -1,0 +1,25 @@
+@startuml
+'!pragma layout smetana
+
+class User {
+    - login: String
+    - password: String
+    - firstName: String
+    - lastName: String
+    - roles: Set<Role>
+}
+class SignIn {
+    - login: String
+    - password: String
+}
+class Client_App {
+}
+class Data_Service {
+}
+class Analyse_Service {
+}
+
+User "1" <-- "1" Client_App
+User "1" <-- "1" Client_App
+
+@enduml
