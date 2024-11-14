@@ -1,10 +1,11 @@
 @startuml
 'https://plantuml.com/class-diagram
+!theme carbon-gray
 
 package "DTO" {
     class PortfolioRequest {
-        account_id: String
-        currency: CurrencyRequest
+        - account_id: String
+        - currency: CurrencyRequest
     }
     enum CurrencyRequest {
         + RUB
@@ -12,113 +13,191 @@ package "DTO" {
         + EUR
     }
     class PortfolioResponse {
-        - total_amount_shares: MoneyValue
-        - total_amount_bonds: MoneyValue
-        - total_amount_etf: MoneyValue
-        - total_amount_currencies: MoneyValue
-        - total_amount_futures: MoneyValue
-        - expected_yield: Quotation
+        - total_amount_shares: MoneyValueDTO
+        - total_amount_bonds: MoneyValueDTO
+'        - total_amount_etf: MoneyValueDTO
+        - total_amount_currencies: MoneyValueDTO
+'        - total_amount_futures: MoneyValueDTO
+'        - expected_yield: BigDecimal
         - positions: PortfolioPosition[]
         - account_id: string
-        - total_amount_options: MoneyValue
-        - total_amount_sp: MoneyValue
-        - total_amount_portfolio: MoneyValue
+'        - total_amount_options: MoneyValueDTO
+'        - total_amount_sp: MoneyValueDTO
+        - total_amount_portfolio: MoneyValueDTO
         - virtual_positions: VirtualPortfolioPosition[]
     }
     class PortfolioPosition {
         - figi: string
         - instrument_type: string
-        - quantity: Quotation
-        - average_position_price: MoneyValue
-        - expected_yield: Quotation
-        - current_nkd: MoneyValue
-        - current_price: MoneyValue
-        - average_position_price_fifo: MoneyValue
-        - blocked: bool
-        - blocked_lots: Quotation
+        - quantity: BigDecimal
+'        - average_position_price: MoneyValueDTO
+'        - expected_yield: BigDecimal
+        - current_nkd: MoneyValueDTO
+'        - average_position_price_pt: BigDecimal
+        - current_price: MoneyValueDTO
+'        - average_position_price_fifo: MoneyValueDTO
+'        - blocked: bool
+'        - blocked_lots: BigDecimal
         - position_uid: string
         - instrument_uid: string
-        - var_margin: MoneyValue
-        - expected_yield_fifo: Quotation
+'        - var_margin: MoneyValueDTO
+'        - expected_yield_fifo: BigDecimal
     }
-    class MoneyValue {
+    class VirtualPortfolioPosition {
+        - position_uid: String
+        - instrument_uid: String
+        - figi: String
+        - instrument_type: String
+        - quantity: BigDecimal
+'        - average_position_price: MoneyValueDTO
+'        - expected_yield: BigDecimal
+'        - expected_yield_fifo: BigDecimal
+        - expire_date: Instant
+        - current_price: MoneyValueDTO
+'        - average_position_price_fifo: MoneyValueDTO
+    }
+    class MoneyValueDTO {
         - currency: String
-        - units: int64
-        - nano: int32
-        + Quotation()
+        - amount: BigDecimal
+        + MoneyValueDTO()
         + getCurrency(): String
-        + getUnits(): int64
-        + getNano(): int32
+        + getAmount(): BigDecimal
         + setCurrency(currency: String)
-        + setUnits(units: int64)
-        + setNano(nano: int32)
-    }
-    class Quotation {
-        - units: int64
-        - nano: int32
-        + Quotation()
-        + getUnits(): int64
-        + getNano(): int32
-        + setUnits(units: int64)
-        + setNano(nano: int32)
+        + setAmount(amount: BigDecimal)
     }
 
-    PortfolioResponse o-- MoneyValue
+    PortfolioResponse o-- MoneyValueDTO
     PortfolioResponse o-- PortfolioPosition
-    PortfolioPosition o-- MoneyValue
-    PortfolioPosition o-- Quotation
-    PortfolioResponse o-- Quotation
+    PortfolioPosition o-- MoneyValueDTO
     PortfolioRequest o-- CurrencyRequest
-
+    PortfolioResponse o-- VirtualPortfolioPosition
+    VirtualPortfolioPosition o-- MoneyValueDTO
 }
 
 package "Services" {
     class AnalyseService {
-        + calculateProfitability(Quotation)
-        + calculateSharpRatio()
+        + profitability (candles: HistoricCandle[]): double[]
+        + profitability (candles: HistoricCandle[], maxProfit: BigDecimal): double[]
+        + mean (profitability: double[]): double
+        + stdDev (profitability: double[], mean: double): double
+        + coefVariation (mean: double, stdDev: double): double
+        + coefSharp (riskFree: double, mean: double, stdDev: double): double
+        + coefInformation (mean: double, meanBenchmark: double, stdDev: double): double
+        + coefSortino (riskFree: double, mean: double, stdDev: double): double
+    }
+    note right of AnalyseService::profitability
+        <b>Параметры:</b>
+        - <u>candles</u> : массив свечей по конкретному инструменту
+        <b>Возврат:</b> массив доходностей
+    end note
+    note left of AnalyseService::"profitability (candles: HistoricCandle[], maxProfit: BigDecimal): double[]"
+        <b>Параметры:</b>
+        - <u>candles</u> : массив свечей по конкретному инструменту
+        - <u>maxProfit</u> : максимальная доходность в массиве
+        <b>Возврат:</b> массив доходностей
+    end note
+    note right of AnalyseService::mean
+        <b>Параметры:</b>
+        - <u>profitability</u> : массив цен по конкретному инструменту
+        <b>Возврат:</b> средняя арифметическая доходность
+    end note
+    note left of AnalyseService::stdDev
+        <b>Параметры:</b>
+        - <u>profitability</u> : массив цен по конкретному инструменту
+        - <u>mean</u> : средняя арифметическая доходность
+        <b>Возврат:</b> стандартное отклонение доходности
+    end note
+    note right of AnalyseService::coefVariation
+        <b>Параметры:</b>
+        - <u>mean</u> : средняя арифметическая доходность
+        - <u>stdDev</u> : стандартное отклонение доходности
+        <b>Возврат:</b> коэффициент вариации
+    end note
+    note left of AnalyseService::coefSharp
+        <b>Параметры:</b>
+        - <u>riskFree</u> : безрисковая ставка
+        - <u>mean</u> : средняя арифметическая доходность
+        - <u>stdDev</u> : стандартное отклонение доходности
+        <b>Возврат:</b> Коэффициент Шарпа
+    end note
+    note right of AnalyseService::coefInformation
+        <b>Параметры:</b>
+        - <u>mean</u> : средняя арифметическая доходность актива
+        - <u>meanBenchmark</u> : средняя арифметическая доходность
+        бенчмарка
+        - <u>stdDev</u> : стандартное отклонение разности доходности
+         актива и бенчмарка
+        <b>Возврат:</b> коэффициент информации
+    end note
+    note left of AnalyseService::coefInformation
+        <b>Параметры:</b>
+        - <u>mean</u> : средняя арифметическая доходность актива
+        - <u>meanBenchmark</u> : средняя арифметическая доходность
+        бенчмарка
+        - <u>stdDev</u> : стандартное отклонение разности доходности
+         актива и бенчмарка
+        <b>Возврат:</b> коэффициент информации
+    end note
+
+    AnalyseService --> Models.HistoricCandle
+
+    note top of AnalyseService
+        <latex>$CV=\frac{\sigma}{\bar{r}}$</latex>
+    end note
+
+    package "Models" {
+        class HistoricCandle {
+            - open: BigDecimal
+            - high: BigDecimal
+            - low: BigDecimal
+            - close: BigDecimal
+            - volume: int64
+            - time: Instant
+            - is_complete: bool
+            - candle_source_type: CandleSource
+        }
+        enum CandleSource {
+            ORDERBOOK_TYPE_UNSPECIFIED
+            ORDERBOOK_TYPE_EXCHANGE
+            ORDERBOOK_TYPE_DEALER
+            ORDERBOOK_TYPE_ALL
+        }
+        HistoricCandle o-- CandleSource
     }
 }
 
-package "Old DTO" {
-    class GetLastPricesRequest {
-        - figi: String[]
-        - instrument_id: String[]
-        - last_price_type: LastPriceType
-        +GetLastPricesRequest()
-    }
-    class GetLastPricesResponse {
-        - last_prices: LastPrice[]
-        + GetLastPricesResponse()
-    }
-    class LastPrice {
-        - figi: string
-        - price: Quotation
-        - time: Instant
-        - instrument_uid: string
-        - last_price_type: LastPriceType
-        + LastPrice()
-    }
-    class Quotation {
-        - units: int64
-        - nano: int32
-        + Quotation()
-        + getUnits(): int64
-        + getNano(): int32
-        + setUnits(units: int64)
-        + setNano(nano: int32)
-    }
 
-    enum LastPriceType {
-        + LAST_PRICE_UNSPECIFIED
-        + LAST_PRICE_EXCHANGE
-        + LAST_PRICE_DEALER
-    }
 
-    GetLastPricesRequest o-- LastPriceType
-    GetLastPricesResponse o-- LastPrice
-    LastPrice o-- LastPriceType
-    LastPrice o-- Quotation
-}
+'package "Old DTO" {
+'    class GetLastPricesRequest {
+'        - figi: String[]
+'        - instrument_id: String[]
+'        - last_price_type: LastPriceType
+'        +GetLastPricesRequest()
+'    }
+'    class GetLastPricesResponse {
+'        - last_prices: LastPrice[]
+'        + GetLastPricesResponse()
+'    }
+'    class LastPrice {
+'        - figi: string
+'        - price: BigDecimal
+'        - time: Instant
+'        - instrument_uid: string
+'        - last_price_type: LastPriceType
+'        + LastPrice()
+'    }
+'
+'    enum LastPriceType {
+'        + LAST_PRICE_UNSPECIFIED
+'        + LAST_PRICE_EXCHANGE
+'        + LAST_PRICE_DEALER
+'    }
+'
+'    GetLastPricesRequest o-- LastPriceType
+'    GetLastPricesResponse o-- LastPrice
+'    LastPrice o-- LastPriceType
+'}
 
 
 

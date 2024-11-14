@@ -2,8 +2,7 @@
 <module external.linked.project.id="Analyse:main" external.linked.project.path="$MODULE_DIR$/../../Analyse" external.root.project.path="$MODULE_DIR$/../../Analyse" external.system.id="GRADLE" external.system.module.group="org.example" external.system.module.type="sourceSet" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet external-system-id="GRADLE" type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false" pureKotlinSourceFolders="C:\Users\tyapi\IdeaProjects\TradeAnalyser\Analyse\src\test\kotlin;C:\Users\tyapi\IdeaProjects\TradeAnalyser\Analyse\src\main\kotlin">
-        <compilerSettings />
+      <configuration version="5" platform="JVM 21" allPlatforms="JVM [21]" useProjectSettings="false">
         <compilerArguments>
           <flagArguments>
             <flagArg name="allowNoSourceFiles" arg="true" />
