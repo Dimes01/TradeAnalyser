@@ -35,9 +35,9 @@ relationship Response_Info {
     Sharpe ratio
     Information ratio
     Sortino ratio
-    Treynor ratio
 }
-
+relationship Get_Analyse {
+}
 
 User -1- Sign_In
 Sign_In -1- Client_App
@@ -49,4 +49,6 @@ Request_Info -1- Data_Service
 Client_App -N- Response_Info
 Response_Info -1- Data_Service
 
+Data_Service -1- Get_Analyse
+Get_Analyse -1- Analyse_Service
 @endchen

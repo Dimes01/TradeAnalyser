@@ -79,7 +79,8 @@ package "Services" {
         + profitability (candles: HistoricCandle[]): double[]
         + profitability (candles: HistoricCandle[], maxProfit: BigDecimal): double[]
         + mean (profitability: double[]): double
-        + stdDev (profitability: double[], mean: double): double
+        + stdDev (profitability: double[]): double
+        + stdDevDiff (profitability: double[], meanBenchmark: double): double
         + coefVariation (mean: double, stdDev: double): double
         + coefSharp (riskFree: double, mean: double, stdDev: double): double
         + coefInformation (mean: double, meanBenchmark: double, stdDev: double): double

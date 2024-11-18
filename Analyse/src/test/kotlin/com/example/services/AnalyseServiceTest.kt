@@ -15,44 +15,40 @@ import java.util.stream.Stream
 class AnalyseServiceTest {
     private companion object {
         val candles: Array<Candle> = arrayOf(
-            Candle(open = BigDecimal(100.0),
-                close = BigDecimal(103.0),
-                high = BigDecimal(105.0),
-                low = BigDecimal(96.0),
-                time = Instant.parse("2024-11-15T11:00:00Z"),
-                isComplete = true,
-                volume = 100,
-                candleSourceType = 1),
-            Candle(open = BigDecimal(103.0),
-                close = BigDecimal(98.0),
-                high = BigDecimal(105.0),
-                low = BigDecimal(96.0),
-                time = Instant.parse("2024-11-15T12:00:00Z"),
-                isComplete = true,
-                volume = 100,
-                candleSourceType = 1),
-            Candle(open = BigDecimal(98.0),
-                close = BigDecimal(108.0),
-                high = BigDecimal(110.0),
-                low = BigDecimal(96.0),
-                time = Instant.parse("2024-11-15T13:00:00Z"),
-                isComplete = true,
-                volume = 100,
-                candleSourceType = 1)
+            candle(100.0,103.0,105.0,96.0,"2024-11-15T11:00:00Z"),
+            candle(103.0,98.0,105.0,96.0,"2024-11-15T12:00:00Z"),
+            candle(98.0,108.0,110.0,96.0,"2024-11-15T13:00:00Z")
+        )
+        val profits: Array<Double> = arrayOf(
+            profit(candles[0].close, candles[0].open),
+            profit(candles[1].close, candles[1].open),
+            profit(candles[2].close, candles[2].open)
         )
 
         @JvmStatic
         fun profitsWithMaxProfit(): Stream<Arguments> {
-            val profit1 = profit(candles[0].close, candles[0].open)
-            val profit2 = profit(candles[1].close, candles[1].open)
-            val profit3 = profit(candles[2].close, candles[2].open)
             return Stream.of(
-                Arguments.of(arrayOf(profit1, profit2, profit3), BigDecimal(0.5)),
-                Arguments.of(arrayOf(profit1, profit2, 0.0), BigDecimal(0.04)),
+                Arguments.of(arrayOf(profits[0], profits[1], profits[2]), BigDecimal(0.5)),
+                Arguments.of(arrayOf(profits[0], profits[1], 0.0), BigDecimal(0.04)),
                 Arguments.of(arrayOf(0.0, 0.0, 0.0), BigDecimal(-1))
             )
         }
 
+        fun candle(
+            open: Double, close: Double,
+            high: Double, low: Double,
+            time: String,
+            isComplete: Boolean = true,
+            volume: Int = 100,
+            candleSourceType: Int = 1): Candle =
+            Candle(open = BigDecimal(open),
+                close = BigDecimal(close),
+                high = BigDecimal(high),
+                low = BigDecimal(low),
+                time = Instant.parse(time),
+                isComplete = isComplete,
+                volume = volume,
+                candleSourceType = candleSourceType)
         fun profit(first: BigDecimal, end: BigDecimal): Double = first.divide(end, 2, RoundingMode.HALF_UP).toDouble() - 1
     }
     private val service: AnalyseService = AnalyseService()
@@ -61,11 +57,7 @@ class AnalyseServiceTest {
     @Test
     fun profitability_arrayFilled_arrayFilled() {
         // Arrange
-        val expected: Array<Double> = arrayOf(
-            profit(candles[0].close, candles[0].open),
-            profit(candles[1].close, candles[1].open),
-            profit(candles[2].close, candles[2].open)
-        )
+        val expected: Array<Double> = arrayOf(profits[0], profits[1], profits[2])
 
         // Act
         val profits = service.profitability(candles)
