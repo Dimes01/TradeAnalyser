@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+    </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Analyse" target="21" />
-      <module name="Analyse.main" target="21" />
-      <module name="Analyse.test" target="21" />
-      <module name="Analyser" target="21" />
-      <module name="Analyser.main" target="21" />
-      <module name="Analyser.test" target="21" />
-      <module name="Analyser_main" target="21" />
-      <module name="Analyser_test" target="21" />
-      <module name="Auth" target="21" />
-      <module name="Auth.main" target="21" />
-      <module name="Auth.test" target="21" />
       <module name="Data" target="21" />
       <module name="Data.main" target="21" />
       <module name="Data.test" target="21" />

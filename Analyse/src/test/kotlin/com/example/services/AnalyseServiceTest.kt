@@ -49,6 +49,7 @@ class AnalyseServiceTest {
                 isComplete = isComplete,
                 volume = volume,
                 candleSourceType = candleSourceType)
+
         fun profit(first: BigDecimal, end: BigDecimal): Double = first.divide(end, 2, RoundingMode.HALF_UP).toDouble() - 1
     }
     private val service: AnalyseService = AnalyseService()
