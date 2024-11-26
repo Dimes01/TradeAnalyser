@@ -14,7 +14,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureSerialization()
     configureRouting()
     configureValidation()
 }

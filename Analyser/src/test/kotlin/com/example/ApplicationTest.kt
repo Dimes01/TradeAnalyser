@@ -9,18 +9,30 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.testing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.math.BigDecimal
+import java.math.MathContext
 import java.time.Instant
 import kotlin.test.*
 
 class ApplicationTest {
     private val service: AnalyseService = AnalyseService()
-    private val candles: Array<Candle> = arrayOf(
-        candle(100.0,103.0,105.0,96.0,"2024-11-15T11:00:00Z"),
-        candle(103.0,98.0,105.0,96.0,"2024-11-15T12:00:00Z"),
-        candle(98.0,108.0,110.0,96.0,"2024-11-15T13:00:00Z")
+    private val candles: List<Candle> = listOf(
+        candle(100.1,103.2,105.3,96.4,"2024-11-15T11:00:00Z"),
+        candle(103.2,98.3,105.4,96.5,"2024-11-15T12:00:00Z"),
+        candle(98.3,108.4,110.5,96.6,"2024-11-15T13:00:00Z")
     )
     private val profits: Array<Double> = service.profitability(candles)
+
+    @Test
+    fun someTest() = testApplication {
+        println(candles)
+        val str = Json.encodeToString(candles)
+        println(str)
+        val obj = Json.decodeFromString<List<Candle>>(str)
+        println(obj)
+    }
 
     @Test
     fun testRoot() = testApplication {
@@ -32,7 +44,7 @@ class ApplicationTest {
         install(ContentNegotiation) { json() }
         client.post("/analyse"){
             contentType(ContentType.Application.Json)
-            setBody(candles)
+            setBody(Json.encodeToString(candles))
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
 //            assertEquals(profits, this)

@@ -13,7 +13,7 @@ class AnalyseService {
         val logger: Logger = LoggerFactory.getLogger(AnalyseService::class.java)
     }
 
-    fun profitability(candles: Array<Candle>): Array<Double> {
+    fun profitability(candles: List<Candle>): Array<Double> {
         logger.info("Method 'profitability': start")
         val profits = Array(candles.size) { 0.0 }
         for (i in candles.indices) {

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AnalyseResponse(
-    val profitability: Array<Double>,
+    val profitability: List<Double>,
     val stdDev: Double,
     val coefVariation: Double,
     val coefSharp: Double,

@@ -11,15 +11,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.math.BigDecimal
 
 object BigDecimalSerializer : KSerializer<BigDecimal> {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor(BigDecimal::class.qualifiedName.toString(), PrimitiveKind.DOUBLE)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("BigDecimal", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): BigDecimal =
-        when (decoder) {
-            is JsonDecoder -> decoder.decodeJsonElement().jsonPrimitive.content.toBigDecimal()
-            else -> decoder.decodeString().toBigDecimal()
-        }
+    override fun serialize(encoder: Encoder, value: BigDecimal) = encoder.encodeString(value.toString())
 
-    override fun serialize(encoder: Encoder, value: BigDecimal) =
-        encoder.encodeDouble(value.toDouble())
+    override fun deserialize(decoder: Decoder): BigDecimal = BigDecimal(decoder.decodeString())
 }
