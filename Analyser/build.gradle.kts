@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -20,6 +19,7 @@ repositories {
 }
 
 val ktor_version: String by project
+
 dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.core)
@@ -30,6 +30,15 @@ dependencies {
 
     implementation("io.ktor:ktor-server-request-validation:$ktor_version")
 
+    // Добавляем зависимости для JUnit 5 и параметризованных тестов
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
