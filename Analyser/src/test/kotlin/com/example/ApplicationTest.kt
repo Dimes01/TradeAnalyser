@@ -1,10 +1,11 @@
 package com.example
 
+import com.example.dto.AnalyseRequest
+import com.example.dto.AnalyseResponse
 import com.example.dto.Candle
 import com.example.services.AnalyseService
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -12,7 +13,6 @@ import io.ktor.server.testing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
-import java.math.MathContext
 import java.time.Instant
 import kotlin.test.*
 
@@ -24,15 +24,18 @@ class ApplicationTest {
         candle(98.3,108.4,110.5,96.6,"2024-11-15T13:00:00Z")
     )
     private val profits: Array<Double> = service.profitability(candles)
-
-    @Test
-    fun someTest() = testApplication {
-        println(candles)
-        val str = Json.encodeToString(candles)
-        println(str)
-        val obj = Json.decodeFromString<List<Candle>>(str)
-        println(obj)
-    }
+    private val riskFree: Double = 0.01
+    private val meanBenchmark: Double = 0.015
+    private val request: AnalyseRequest = AnalyseRequest(candles, riskFree, meanBenchmark)
+    private val expectedResponse: AnalyseResponse = AnalyseResponse(
+        profitability = profits.toList(),
+        mean = profits.average(),
+        stdDev = service.stdDev(profits),
+        coefVariation = service.coefVariation(profits),
+        coefSharp = service.coefSharp(profits, riskFree),
+        coefInformation = service.coefInformation(profits, meanBenchmark),
+        coefSortino = service.coefSortino(profits, riskFree)
+    )
 
     @Test
     fun testRoot() = testApplication {
@@ -44,10 +47,10 @@ class ApplicationTest {
         install(ContentNegotiation) { json() }
         client.post("/analyse"){
             contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(candles))
+            setBody(Json.encodeToString(request))
         }.apply {
             assertEquals(HttpStatusCode.OK, status)
-//            assertEquals(profits, this)
+            assertEquals(expectedResponse, this.body<AnalyseResponse>())
         }
     }
 
