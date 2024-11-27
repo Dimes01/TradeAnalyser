@@ -1,0 +1,18 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor User as user
+participant JwtFilter as jwtFilter
+participant JwtProvider as jwtProvider
+participant SecurityContextHolder as context
+
+autonumber
+
+user -> jwtFilter: Запрос на аутентификацию через JWT
+jwtFilter -> jwtProvider: Проверка валидности JWT
+jwtProvider --> jwtFilter: JWT валидный
+jwtFilter -> context: Установка объекта аутентификации
+context --> user: Успешная аутентификация
+
+
+@enduml

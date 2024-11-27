@@ -1,0 +1,22 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor User as user
+participant AuthController as controller
+participant AuthenticationService as service
+participant JwtProvider as jwtProvider
+
+autonumber
+
+user -> controller: Запрос на аутентификацию через логин и пароль
+controller -> service: проверка логина и пароля
+service -> service: пользователь найден
+service -> service: пароль верный
+service -> jwtProvider: генерация токенов
+jwtProvider -> jwtProvider: access-токен сгенерирован
+jwtProvider -> jwtProvider: refresh-токен сгенерирован
+jwtProvider --> service: возврат токенов
+service --> controller: возврат токенов
+controller --> user: возврат токенов
+
+@enduml
