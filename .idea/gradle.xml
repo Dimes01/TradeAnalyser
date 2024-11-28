@@ -4,30 +4,22 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/API" />
+        <option name="gradleHome" value="" />
+        <option name="gradleJvm" value="graalvm-jdk-21" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/API" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/Analyse" />
         <option name="gradleHome" value="" />
         <option name="gradleJvm" value="graalvm-jdk-21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/Analyse" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/Analyser" />
-        <option name="gradleJvm" value="graalvm-jdk-21" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/Analyser" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/Auth" />
-        <option name="gradleJvm" value="graalvm-jdk-21" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/Auth" />
           </set>
         </option>
       </GradleProjectSettings>
