@@ -3,3 +3,7 @@
 /API/.gradle/
 /Data/.gradle/
 /API/src/main/resources/local.properties
+/API/build/
+/Analyse/.gradle/
+/Analyse/build/
+/.idea/
