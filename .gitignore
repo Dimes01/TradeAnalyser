@@ -1,4 +1,4 @@
 # Project exclude paths
 /Analyser/.gradle/
-/Auth/.gradle/
+/API/.gradle/
 /Data/.gradle/
