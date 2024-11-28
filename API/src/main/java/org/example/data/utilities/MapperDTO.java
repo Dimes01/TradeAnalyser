@@ -1,8 +1,10 @@
 package org.example.data.utilities;
 
 import org.example.data.dto.AccountDTO;
+import org.example.data.dto.HistoricCandleDTO;
 import org.example.data.dto.LastPriceDTO;
 import ru.tinkoff.piapi.contract.v1.Account;
+import ru.tinkoff.piapi.contract.v1.HistoricCandle;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
 import ru.tinkoff.piapi.core.utils.DateUtils;
 import ru.tinkoff.piapi.core.utils.MapperUtils;
@@ -30,6 +32,19 @@ public class MapperDTO {
             DateUtils.timestampToInstant(lastPrice.getTime()),
             lastPrice.getInstrumentUid(),
             lastPrice.getLastPriceTypeValue()
+        );
+    }
+
+    public static HistoricCandleDTO HistoricCandleToDTO(HistoricCandle historicCandle) {
+        return new HistoricCandleDTO(
+            MapperUtils.quotationToBigDecimal(historicCandle.getOpen()),
+            MapperUtils.quotationToBigDecimal(historicCandle.getClose()),
+            MapperUtils.quotationToBigDecimal(historicCandle.getLow()),
+            MapperUtils.quotationToBigDecimal(historicCandle.getHigh()),
+            historicCandle.getVolume(),
+            DateUtils.timestampToInstant(historicCandle.getTime()),
+            historicCandle.getIsComplete(),
+            historicCandle.getCandleSourceValue()
         );
     }
 }

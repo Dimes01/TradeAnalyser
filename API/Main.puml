@@ -1,0 +1,60 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+'left to right direction
+
+actor :Пользователь: as user #green;line:green
+
+
+usecase (Войти в систему) as enterToSystem
+usecase (Получить токены) as getTokens
+usecase (Получить информацию) as getInfo
+
+usecase (Указать логин) as setLogin
+usecase (Указать пароль) as setPassword
+usecase (Получить токен доступа) as getAccessToken
+usecase (Получить токен обновления) as getRefreshToken
+usecase (Информация о ценных бумагах) as getInfoSecurities
+usecase (Получить анализ) as getAnalyse
+
+usecase (Информация об инструменте) as getInfoInstrument
+usecase (Исторические свечи) as getHistoricCandle
+usecase (Анализ ценных бумаг) as analyseSecurities
+'usecase (Информация о фьючерсах) as getInfoFutures
+'usecase (Информация об опционах) as getInfoOptions
+
+usecase (Указать figi инструмента) as setFigi
+usecase (Указать бумаги) as setSecurity
+usecase (Указать безрисковую ставку) as setRiskFree
+usecase (Указать эталонную бумагу) as setBenchmark
+
+
+user -left-> enterToSystem
+user -right-> getTokens
+user -down-> getInfo
+
+enterToSystem .down.> setLogin: " "include""
+enterToSystem .down.> setPassword: " "include""
+
+getTokens .down.> getAccessToken: " "include""
+getTokens .down.> getRefreshToken: " "include""
+
+getInfo <|-down- getInfoSecurities
+getInfo <|-down- getAnalyse
+'getInfo <|-down- getInfoFutures
+'getInfo <|-down- getInfoOptions
+
+getInfoSecurities <|-down- getInfoInstrument
+getInfoSecurities <|-down- getHistoricCandle
+
+getHistoricCandle .down.> setFigi: " "include""
+
+getInfoInstrument .down.> setFigi: " "include""
+
+getAnalyse <|-- analyseSecurities
+
+analyseSecurities .down.> setSecurity: " "include""
+analyseSecurities .down.> setRiskFree: " "include""
+analyseSecurities .right.> setBenchmark: " "include""
+
+@enduml

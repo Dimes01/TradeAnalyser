@@ -24,7 +24,7 @@ public class AccountDTO {
     @NotBlank
     private String name;
 
-    @Min(-1) @Max(4)
+    @Min(0) @Max(4)
     private int status;
 
     @JsonSerialize(using = InstantSerializer.class)
@@ -35,6 +35,6 @@ public class AccountDTO {
     @JsonDeserialize(using = InstantDeserializer.class)
     private Instant closedDate;
 
-    @Min(-1) @Max(3)
+    @Min(0) @Max(3)
     private int accessLevel;
 }

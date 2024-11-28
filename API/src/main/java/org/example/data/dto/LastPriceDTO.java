@@ -32,6 +32,6 @@ public class LastPriceDTO {
     @NotBlank
     private String instrumentId;
 
-    @Min(-1) @Max(2)
+    @Min(0) @Max(2)
     private int lastPriceType;
 }
