@@ -25,6 +25,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    implementation("ru.tinkoff.piapi:java-sdk-core:1.24")
+
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
 
     implementation("io.jsonwebtoken:jjwt-api:$jsonwebtokenVersion")

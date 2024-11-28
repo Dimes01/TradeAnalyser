@@ -2,3 +2,4 @@
 /Analyser/.gradle/
 /API/.gradle/
 /Data/.gradle/
+/API/src/main/resources/local.properties
