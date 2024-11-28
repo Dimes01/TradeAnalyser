@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class AuthenticationServiceTest {
-    @Mock private UserService userService;
+    @Mock private AuthUserService authUserService;
     @Mock private JwtProvider jwtProvider;
     @Mock private HashMap<String, String> refreshStorage = new HashMap<>();
     @InjectMocks private AuthenticationService authenticationService;
@@ -65,7 +65,7 @@ class AuthenticationServiceTest {
         // Arrange
         JwtRequest request = new JwtRequest(user.getLogin(), user.getPassword());
         var expectedJwtResponse = new JwtResponse("generatedAccessToken", "generatedRefreshToken");
-        when(userService.getByLogin(anyString())).thenReturn(Optional.of(user));
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.of(user));
         when(jwtProvider.generateAccessToken(user)).thenReturn(expectedJwtResponse.getAccessToken());
         when(jwtProvider.generateRefreshToken(user)).thenReturn(expectedJwtResponse.getRefreshToken());
 
@@ -80,7 +80,7 @@ class AuthenticationServiceTest {
     void login_notExistedUser_throwAuthException() throws AuthException {
         // Arrange
         JwtRequest request = new JwtRequest(user.getLogin() + "wrongLogin", user.getPassword());
-        when(userService.getByLogin(anyString())).thenReturn(Optional.empty());
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(AuthException.class, () -> authenticationService.login(request));
@@ -90,7 +90,7 @@ class AuthenticationServiceTest {
     void login_notExistedPassword_throwAuthException() throws AuthException {
         // Arrange
         JwtRequest request = new JwtRequest(user.getLogin(), user.getPassword() + "wrongPassword");
-        when(userService.getByLogin(anyString())).thenReturn(Optional.of(user));
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.of(user));
 
         // Act & Assert
         assertThrows(AuthException.class, () -> authenticationService.login(request));
@@ -111,7 +111,7 @@ class AuthenticationServiceTest {
         when(jwtProvider.getRefreshClaims(anyString())).thenReturn(claims);
         when(claims.getSubject()).thenReturn(user.getLogin());
         when(refreshStorage.get(anyString())).thenReturn(request);
-        when(userService.getByLogin(anyString())).thenReturn(Optional.of(user));
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.of(user));
         when(jwtProvider.generateAccessToken(user)).thenReturn(expectedJwtResponse.getAccessToken());
 
         // Act
@@ -149,7 +149,7 @@ class AuthenticationServiceTest {
         when(jwtProvider.getRefreshClaims(anyString())).thenReturn(claims);
         when(claims.getSubject()).thenReturn(user.getLogin());
         when(refreshStorage.get(anyString())).thenReturn(request);
-        when(userService.getByLogin(anyString())).thenReturn(Optional.empty());
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(AuthException.class, () -> authenticationService.getAccessToken(request));
@@ -184,7 +184,7 @@ class AuthenticationServiceTest {
         when(jwtProvider.getRefreshClaims(anyString())).thenReturn(claims);
         when(claims.getSubject()).thenReturn(user.getLogin());
         when(refreshStorage.get(anyString())).thenReturn(request);
-        when(userService.getByLogin(anyString())).thenReturn(Optional.of(user));
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.of(user));
         when(jwtProvider.generateAccessToken(user)).thenReturn(expectedJwtResponse.getAccessToken());
         when(jwtProvider.generateRefreshToken(user)).thenReturn(expectedJwtResponse.getRefreshToken());
 
@@ -220,7 +220,7 @@ class AuthenticationServiceTest {
         when(jwtProvider.getRefreshClaims(anyString())).thenReturn(claims);
         when(claims.getSubject()).thenReturn(user.getLogin());
         when(refreshStorage.get(anyString())).thenReturn(request);
-        when(userService.getByLogin(anyString())).thenReturn(Optional.empty());
+        when(authUserService.getByLogin(anyString())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(AuthException.class, () -> authenticationService.refresh(request));

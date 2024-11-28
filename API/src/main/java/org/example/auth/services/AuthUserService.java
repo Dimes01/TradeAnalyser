@@ -13,12 +13,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Qualifier("auth-user-service")
-public class UserService {
+public class AuthUserService {
 
     private final List<User> users;
 
-    public UserService() {
+    public AuthUserService() {
         this.users = List.of(
             new User("user", "1234", "FirstName", "LastName", Collections.singleton(Role.USER)),
             new User("admin", "12345", "FirstName", "LastName", Collections.singleton(Role.ADMIN))

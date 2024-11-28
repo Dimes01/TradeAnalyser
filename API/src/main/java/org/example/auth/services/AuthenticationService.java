@@ -3,7 +3,6 @@ package org.example.auth.services;
 import io.jsonwebtoken.Claims;
 import jakarta.security.auth.message.AuthException;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.example.auth.dto.JwtResponse;
 import org.example.auth.entities.User;
 import org.example.auth.models.JwtAuthentication;
@@ -21,23 +20,23 @@ import java.util.Map;
 @Service
 public class AuthenticationService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-    private final UserService userService;
+    private final AuthUserService authUserService;
     private final Map<String, String> refreshStorage;
     private final JwtProvider jwtProvider;
 
     @Autowired
     public AuthenticationService(
-        @Qualifier("auth-user-service") UserService userService,
+        AuthUserService authUserService,
         Map<String, String> refreshStorage,
         JwtProvider jwtProvider) {
-        this.userService = userService;
+        this.authUserService = authUserService;
         this.refreshStorage = refreshStorage;
         this.jwtProvider = jwtProvider;
     }
 
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         logger.info("Method 'login': start");
-        User user = userService.getByLogin(authRequest.getLogin())
+        User user = authUserService.getByLogin(authRequest.getLogin())
             .orElseThrow(() -> {
                 logger.error("Method 'login': user not found");
                 return new AuthException("Пользователь не найден");
@@ -64,7 +63,7 @@ public class AuthenticationService {
             String saveRefreshToken = refreshStorage.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 logger.debug("Method 'getAccessToken': refresh token from storage is valid");
-                User user = userService.getByLogin(login)
+                User user = authUserService.getByLogin(login)
                     .orElseThrow(() -> {
                         logger.error("Method 'getAccessToken': user not found");
                         return new AuthException("Пользователь не найден");
@@ -87,7 +86,7 @@ public class AuthenticationService {
             String saveRefreshToken = refreshStorage.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 logger.debug("Method 'refresh': refresh token from storage is valid");
-                User user = userService.getByLogin(login)
+                User user = authUserService.getByLogin(login)
                     .orElseThrow(() -> {
                         logger.error("Method 'refresh': user not found");
                         return new AuthException("Пользователь не найден");

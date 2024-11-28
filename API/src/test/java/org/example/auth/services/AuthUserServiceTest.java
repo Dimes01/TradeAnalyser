@@ -12,28 +12,28 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class UserServiceTest {
+class AuthUserServiceTest {
     List<User> users = new ArrayList<>();
-    UserService userService;
+    AuthUserService authUserService;
 
-    public UserServiceTest() {
+    public AuthUserServiceTest() {
         users.add(new User("user", "1234", "FirstName", "LastName", Collections.singleton(Role.USER)));
-        userService = new UserService(users);
+        authUserService = new AuthUserService(users);
     }
 
     @Test
     void getByLogin_existedUser_returnUser() {
-        var user = userService.getByLogin(users.getFirst().getLogin());
+        var user = authUserService.getByLogin(users.getFirst().getLogin());
         assertEquals(users.getFirst(), user.orElse(null));
     }
 
     @Test
     void getByLogin_wrongLogin_throwNPE() {
-        assertEquals(Optional.empty(), userService.getByLogin("wrongLogin"));
+        assertEquals(Optional.empty(), authUserService.getByLogin("wrongLogin"));
     }
 
     @Test
     void getByLogin_nullLogin_throwNPE() {
-        assertThrows(NullPointerException.class, () -> userService.getByLogin(null));
+        assertThrows(NullPointerException.class, () -> authUserService.getByLogin(null));
     }
 }
