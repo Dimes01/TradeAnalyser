@@ -1,8 +1,11 @@
 package org.example.auth.controllers;
 
-import org.example.auth.models.User;
+import org.example.auth.dto.LoginRequest;
+import org.example.auth.dto.LoginResponse;
+import org.example.auth.dto.RegisterRequest;
 import org.example.auth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,12 +16,13 @@ public class AuthController {
     private UserService service;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return service.register(user);
+    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) throws Exception {
+        service.register(request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return service.verify(user);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(service.verify(request));
     }
 }
