@@ -1,3 +1,11 @@
+# Project exclude paths
+
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -35,3 +43,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+**/local.properties
+
+/API/src/main/resources/local.properties
