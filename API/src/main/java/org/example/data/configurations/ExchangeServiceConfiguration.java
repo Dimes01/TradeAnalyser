@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = { "classpath:datamodule.properties", "classpath:local.properties" })
+@PropertySource(value = {"classpath:exchange.properties", "classpath:local.properties" })
 public class ExchangeServiceConfiguration {
 
     @Value("${ru.tinkoff.piapi.core.api.target}")

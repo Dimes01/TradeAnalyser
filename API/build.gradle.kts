@@ -27,6 +27,8 @@ dependencies {
 
     implementation("ru.tinkoff.piapi:java-sdk-core:1.24")
 
+    implementation("org.hibernate.orm:hibernate-core:6.6.3.Final")
+
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
 
     implementation("io.jsonwebtoken:jjwt-api:$jsonwebtokenVersion")

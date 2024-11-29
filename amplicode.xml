@@ -3,4 +3,13 @@
   <component name="AmplicodeJpaPluginProjectSettings">
     <option name="lastSelectedLanguage" value="Java" />
   </component>
+  <component name="AmplicodePersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="API.main" name="Default">
+        <packages>
+          <package value="org.example" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>
