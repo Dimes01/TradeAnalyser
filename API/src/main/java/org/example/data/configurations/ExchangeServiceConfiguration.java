@@ -19,12 +19,11 @@ public class ExchangeServiceConfiguration {
     @Value("${ru.tinkoff.piapi.core.api.token}")
     private String token;
 
-    private AuthInterceptor authInterceptor;
     private Channel channel;
 
     @PostConstruct
     public void init() {
-        authInterceptor = new AuthInterceptor(token);
+        AuthInterceptor authInterceptor = new AuthInterceptor(token);
         channel = ManagedChannelBuilder
             .forTarget(target)
             .useTransportSecurity()

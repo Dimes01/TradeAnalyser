@@ -1,6 +1,7 @@
 package org.example.auth.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.auth.dto.LoginRequest;
 import org.example.auth.dto.LoginResponse;
 import org.example.auth.dto.RegisterRequest;
@@ -14,11 +15,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @PropertySource("classpath:local.properties")
@@ -54,12 +61,24 @@ public class UserService {
         return Base64.getEncoder().encodeToString(encValue);
     }
 
-    public String decrypt(String encryptedValue) throws Exception {
-        Key key = generateKey();
-        Cipher c = Cipher.getInstance(ALGORITHM);
-        c.init(Cipher.DECRYPT_MODE, key);
-        byte[] decValue = Base64.getDecoder().decode(encryptedValue);
-        byte[] decryptedValue = c.doFinal(decValue);
+    public String decrypt(String encryptedValue) {
+        byte[] decryptedValue = new byte[0];
+        try {
+            Cipher c = Cipher.getInstance(ALGORITHM);
+            c.init(Cipher.DECRYPT_MODE, generateKey());
+            byte[] decValue = Base64.getDecoder().decode(encryptedValue);
+            decryptedValue = c.doFinal(decValue);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("Method 'decrypt': algorithm not found");
+        } catch (NoSuchPaddingException e) {
+            log.error("Method 'decrypt': could not get instance of cipher");
+        } catch (InvalidKeyException e) {
+            log.error("Method 'decrypt': key is invalid");
+        } catch (IllegalBlockSizeException e) {
+            log.error("Method 'decrypt': illegal block size");
+        } catch (BadPaddingException e) {
+            log.error("Method 'decrypt': bad padding");
+        }
         return new String(decryptedValue);
     }
 

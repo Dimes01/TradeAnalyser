@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,33 +17,33 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HistoricCandleDTO {
-    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false, message = "Open price must be positive")
     @JsonDeserialize(using = NumberDeserializers.BigDecimalDeserializer.class)
     private BigDecimal open;
 
-    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false, message = "Close price must be positive")
     @JsonDeserialize(using = NumberDeserializers.BigDecimalDeserializer.class)
     private BigDecimal close;
 
-    @NotNull
-    @JsonDeserialize(using = NumberDeserializers.BigDecimalDeserializer.class)
-    private BigDecimal low;
-
-    @NotNull
+    @DecimalMin(value = "0.0", inclusive = false, message = "High price must be positive")
     @JsonDeserialize(using = NumberDeserializers.BigDecimalDeserializer.class)
     private BigDecimal high;
 
-    @Positive
-    private long volume;
+    @DecimalMin(value = "0.0", inclusive = false, message = "Low price must be positive")
+    @JsonDeserialize(using = NumberDeserializers.BigDecimalDeserializer.class)
+    private BigDecimal low;
 
-    @NotNull
+    @NotNull(message = "Time must be set")
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = InstantDeserializer.class)
     private Instant time;
 
-    @NotNull
+    @NotNull(message = "Is complete must be set")
     private boolean isComplete;
 
-    @Min(0) @Max(2)
+    @Positive(message = "Volume must be positive")
+    private int volume;
+
+    @Min(value = 0, message = "At least 0 required") @Max(value = 2, message = "At most 2 required")
     private int candleSourceType;
 }
