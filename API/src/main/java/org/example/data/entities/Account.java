@@ -8,14 +8,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.auth.models.User;
 
 import java.time.Instant;
 
+@Builder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,4 +51,10 @@ public class Account {
     @Min(value = 0, message = "Access level should be non-negative")
     @Max(value = 3, message = "Access level should be less or equal 3")
     private int accessLevel;
+
+    @NotBlank(message = "FiskFree is required")
+    private int fiskFree;
+
+    @NotBlank(message = "MeanBenchmark is required")
+    private int meanBenchmark;
 }

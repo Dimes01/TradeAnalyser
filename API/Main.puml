@@ -7,16 +7,15 @@ actor :Пользователь: as user #green;line:green
 
 
 usecase (Войти в систему) as enterToSystem
-usecase (Получить токены) as getTokens
 usecase (Получить информацию) as getInfo
 
-usecase (Указать логин) as setLogin
-usecase (Указать пароль) as setPassword
-usecase (Получить токен доступа) as getAccessToken
-usecase (Получить токен обновления) as getRefreshToken
+usecase (Получить JWT-токен) as getJWT
+usecase (Указать способ аутентификации) as setAuthType
 usecase (Информация о ценных бумагах) as getInfoSecurities
 usecase (Получить анализ) as getAnalyse
 
+usecase (Указать логин и пароль) as setLoginPassword
+usecase (Использовать JWT-токен) as useJWT
 usecase (Информация об инструменте) as getInfoInstrument
 usecase (Исторические свечи) as getHistoricCandle
 usecase (Анализ ценных бумаг) as analyseSecurities
@@ -30,17 +29,18 @@ usecase (Указать эталонную бумагу) as setBenchmark
 
 
 user -left-> enterToSystem
-user -right-> getTokens
-user -down-> getInfo
+user -right-> getInfo
 
-enterToSystem .down.> setLogin: " "include""
-enterToSystem .down.> setPassword: " "include""
+enterToSystem .down.> getJWT: " "include""
+enterToSystem .down.> setAuthType: " "include""
 
-getTokens .down.> getAccessToken: " "include""
-getTokens .down.> getRefreshToken: " "include""
+setAuthType .down.> setLoginPassword: " "extend""
+setAuthType .down.> useJWT: " "extend""
+
+useJWT .up.> getJWT: " "include""
 
 getInfo <|-down- getInfoSecurities
-getInfo <|-down- getAnalyse
+getInfo <|-right- getAnalyse
 'getInfo <|-down- getInfoFutures
 'getInfo <|-down- getInfoOptions
 
@@ -52,9 +52,10 @@ getHistoricCandle .down.> setFigi: " "include""
 getInfoInstrument .down.> setFigi: " "include""
 
 getAnalyse <|-- analyseSecurities
+getAnalyse .down.> getInfoSecurities: " "include""
 
-analyseSecurities .down.> setSecurity: " "include""
+analyseSecurities .right.> setSecurity: " "include""
 analyseSecurities .down.> setRiskFree: " "include""
-analyseSecurities .right.> setBenchmark: " "include""
+analyseSecurities .down.> setBenchmark: " "include""
 
 @enduml

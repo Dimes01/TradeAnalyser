@@ -1,12 +1,10 @@
 package org.example.data.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.auth.models.User;
 
+@Builder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +14,8 @@ public class Analyse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "securities_id")
-    private Securities securities;
-
+    @Column(name = "securities_uid")
+    private String securitiesUid;
     private double mean;
     private double stdDev;
     private double coefVariation;

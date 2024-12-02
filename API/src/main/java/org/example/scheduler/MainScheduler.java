@@ -6,18 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.auth.models.User;
 import org.example.auth.repositories.UserRepository;
 import org.example.auth.services.UserService;
-import org.example.data.dto.AccountDTO;
 import org.example.data.dto.AnalyseRequest;
-import org.example.data.dto.AnalyseResponse;
+import org.example.data.entities.Account;
 import org.example.data.repositories.AccountRepository;
 import org.example.data.repositories.AnalyseRepository;
-import org.example.data.repositories.SecuritiesRepository;
 import org.example.data.services.AnalyseService;
 import org.example.data.services.ExchangeUserService;
 import org.example.data.services.OperationService;
 import org.example.data.services.QuotesService;
 import org.example.data.utilities.AuthInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.data.utilities.MapperEntities;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -33,6 +31,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * <u>MainScheduler</u> выполняет следующие задачи:
+ * <ul>
+ *     <li>анализ портфелей по расписанию</li>
+ *     <li>сохранение результатов анализа в базу данных</li>
+ * </ul>
+ *
+ * Для анализа портфелей необходимо:
+ * <ol>
+ *     <li>Получить для каждого пользователя список счётов</li>
+ *     <li>По каждому счету определить список инструментов для анализа</li>
+ *     <li>Для каждого инструмента достать из <b>API</b> исторические свечи</li>
+ *     <li>Полученные свечи проанализировать</li>
+ *     <li>Анализ свечей сохранить в БД</li>
+ * </ol>
+ */
+
+
+
 @Component
 @EnableScheduling
 @PropertySource("classpath:")
@@ -41,7 +58,6 @@ import java.util.concurrent.Executors;
 public class MainScheduler {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-    private final SecuritiesRepository securitiesRepository;
     private final AnalyseRepository analyseRepository;
     private final UserService userService;
     private final OperationService operationService;
@@ -55,7 +71,7 @@ public class MainScheduler {
     private int maxThreads;
 
     private List<ExchangeUserService> exchangeUserServices;
-    private List<AccountDTO> accountDTOs;
+    private List<Account> accounts;
 
     public void updateUsers() {
         var users = userRepository.findAll();
@@ -65,33 +81,34 @@ public class MainScheduler {
     }
 
     private List<ExchangeUserService> getExchangeUserServices(List<User> users) {
-        exchangeUserServices = new ArrayList<ExchangeUserService>();
+        exchangeUserServices = new ArrayList<>();
         users.forEach(user -> {
             var token = userService.decrypt(user.getToken());
             var interceptor = new AuthInterceptor(token);
             var channel = ManagedChannelBuilder.forTarget(target).useTransportSecurity().intercept(interceptor).build();
             var exchangeUserService = new ExchangeUserService(channel);
+            exchangeUserService.setUser(user);
             exchangeUserServices.add(exchangeUserService);
             log.info("Make exchange user service {}", exchangeUserService);
         });
         return exchangeUserServices;
     }
 
-    private List<AccountDTO> getAccounts(List<ExchangeUserService> exchangeUserServices) {
-        accountDTOs = new ArrayList<AccountDTO>();
+    private List<Account> getAccounts(List<ExchangeUserService> exchangeUserServices) {
+        accounts = new ArrayList<>();
         var futures = new ArrayList<CompletableFuture<Void>>();
         exchangeUserServices.forEach(exchangeUserService -> {
             futures.add(CompletableFuture.runAsync(() -> {
-                accountDTOs.addAll(exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL));
+                accounts.addAll(exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL));
                 log.info("Got accounts from exchange user service {}", exchangeUserService);
             }));
         });
         futures.forEach(CompletableFuture::join);
-
-        return accountDTOs;
+        accountRepository.saveAll(accounts);
+        return accounts;
     }
 
-    private void analyseAccounts(List<AccountDTO> accounts) {
+    private void analyseAccounts(List<Account> accounts) {
         try (ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads)) {
             for (var account : accounts) {
                 // TODO: написать получение безрисковой ставки и бенчмарка от пользователя
@@ -99,25 +116,26 @@ public class MainScheduler {
             }
             threadPool.shutdown();
         }
+
         log.info("Accounts are analysed");
     }
 
-    private void analyseAccount(AccountDTO account, Double riskFree, Double meanBenchmark) {
-        var futures = new ArrayList<CompletableFuture<AnalyseResponse>>();
+    private void analyseAccount(Account account, Double riskFree, Double meanBenchmark) {
+        var futures = new ArrayList<CompletableFuture<Void>>();
         var positions = operationService.getPositions(account.getId());
 
         // Анализируем только ценные бумаги. Фьючерсы и опционы не анализируем
         positions.getSecurities().forEach(securityPosition -> {
-            futures.add(CompletableFuture.supplyAsync(() -> {
+            futures.add(CompletableFuture.runAsync(() -> {
                 var to = Instant.now();
                 var from = to.minus(1, ChronoUnit.YEARS);
                 var candles = quotesService.getHistoricCandles(securityPosition.getFigi(), to, from, CandleInterval.CANDLE_INTERVAL_DAY);
-                return analyseService.analyse(new AnalyseRequest(candles, riskFree, meanBenchmark));
+                var analyse = MapperEntities.AnalyseResponseToAnalyse(analyseService.analyse(new AnalyseRequest(candles, riskFree, meanBenchmark)));
+                analyse.setSecuritiesUid(securityPosition.getFigi());
+                analyseRepository.save(analyse);
             }));
         });
-
-        // TODO: реализовать сохранение анализов в БД
-
+        futures.forEach(CompletableFuture::join);
         log.info("Account {} is analysed", account.getId());
     }
 

@@ -22,12 +22,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank
+    @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "Token is required")
     private String token;
 }

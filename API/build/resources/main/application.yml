@@ -14,3 +14,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+services:
+  analyse:
+    base-url: http://localhost:8082
+  main-scheduler:
+    max-threads: 10
