@@ -15,16 +15,18 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDTO {
-    @NotBlank
+    @NotBlank(message = "Id should not be blank")
     private String id;
 
-    @Min(-1) @Max(4)
+    @Min(value = 0, message = "Type should be non-negative")
+    @Max(value = 4, message = "Type should be less or equal 4")
     private int type;
 
-    @NotBlank
+    @NotBlank(message = "Name should not be blank")
     private String name;
 
-    @Min(0) @Max(4)
+    @Min(value = 0, message = "Status should be non-negative")
+    @Max(value = 4, message = "Status should be less or equal 4")
     private int status;
 
     @JsonSerialize(using = InstantSerializer.class)
@@ -35,6 +37,7 @@ public class AccountDTO {
     @JsonDeserialize(using = InstantDeserializer.class)
     private Instant closedDate;
 
-    @Min(0) @Max(3)
+    @Min(value = 0, message = "Access level should be non-negative")
+    @Max(value = 3, message = "Access level should be less or equal 3")
     private int accessLevel;
 }

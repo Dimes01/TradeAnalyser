@@ -41,9 +41,9 @@ public class MapperDTO {
             MapperUtils.quotationToBigDecimal(historicCandle.getClose()),
             MapperUtils.quotationToBigDecimal(historicCandle.getLow()),
             MapperUtils.quotationToBigDecimal(historicCandle.getHigh()),
-            historicCandle.getVolume(),
             DateUtils.timestampToInstant(historicCandle.getTime()),
             historicCandle.getIsComplete(),
+            historicCandle.getVolume(),
             historicCandle.getCandleSourceValue()
         );
     }

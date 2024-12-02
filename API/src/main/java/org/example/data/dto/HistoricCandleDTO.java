@@ -42,7 +42,7 @@ public class HistoricCandleDTO {
     private boolean isComplete;
 
     @Positive(message = "Volume must be positive")
-    private int volume;
+    private long volume;
 
     @Min(value = 0, message = "At least 0 required") @Max(value = 2, message = "At most 2 required")
     private int candleSourceType;
