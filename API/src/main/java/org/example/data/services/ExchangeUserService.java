@@ -35,9 +35,9 @@ public class ExchangeUserService {
                 .map(MapperDTO::AccountToDTO)
                 .toList();
         } catch (InterruptedException e) {
-            log.error("Interrupted thread while waiting exchange user service {}", this);
+            log.error("Method 'getAccounts': interrupted thread while waiting exchange user service {}", this);
         } catch (ExecutionException e) {
-            log.error("This future completed exceptionally for exchange user service {}", this);
+            log.error("Method 'getAccounts': this future completed exceptionally for exchange user service {}", this);
         }
         logger.info("Method 'getAccounts': finished");
         return accounts;

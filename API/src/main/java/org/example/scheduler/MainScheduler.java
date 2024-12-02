@@ -1,6 +1,7 @@
 package org.example.scheduler;
 
 import io.grpc.ManagedChannelBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.auth.models.User;
 import org.example.auth.repositories.UserRepository;
@@ -8,6 +9,9 @@ import org.example.auth.services.UserService;
 import org.example.data.dto.AccountDTO;
 import org.example.data.dto.AnalyseRequest;
 import org.example.data.dto.AnalyseResponse;
+import org.example.data.repositories.AccountRepository;
+import org.example.data.repositories.AnalyseRepository;
+import org.example.data.repositories.SecuritiesRepository;
 import org.example.data.services.AnalyseService;
 import org.example.data.services.ExchangeUserService;
 import org.example.data.services.OperationService;
@@ -18,17 +22,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 import ru.tinkoff.piapi.contract.v1.AccountStatus;
 import ru.tinkoff.piapi.contract.v1.CandleInterval;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,12 +37,16 @@ import java.util.concurrent.Executors;
 @EnableScheduling
 @PropertySource("classpath:")
 @Slf4j
+@RequiredArgsConstructor
 public class MainScheduler {
-    @Autowired private UserRepository userRepository;
-    @Autowired private UserService userService;
-    @Autowired private OperationService operationService;
-    @Autowired private QuotesService quotesService;
-    @Autowired private AnalyseService analyseService;
+    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final SecuritiesRepository securitiesRepository;
+    private final AnalyseRepository analyseRepository;
+    private final UserService userService;
+    private final OperationService operationService;
+    private final QuotesService quotesService;
+    private final AnalyseService analyseService;
 
     @Value("${ru.tinkoff.piapi.core.api.target}")
     private String target;
@@ -49,6 +54,8 @@ public class MainScheduler {
     @Value("${services.main-scheduler.max-threads}")
     private int maxThreads;
 
+    private List<ExchangeUserService> exchangeUserServices;
+    private List<AccountDTO> accountDTOs;
 
     public void updateUsers() {
         var users = userRepository.findAll();
@@ -58,7 +65,7 @@ public class MainScheduler {
     }
 
     private List<ExchangeUserService> getExchangeUserServices(List<User> users) {
-        var exchangeUserServices = new ArrayList<ExchangeUserService>();
+        exchangeUserServices = new ArrayList<ExchangeUserService>();
         users.forEach(user -> {
             var token = userService.decrypt(user.getToken());
             var interceptor = new AuthInterceptor(token);
@@ -71,7 +78,7 @@ public class MainScheduler {
     }
 
     private List<AccountDTO> getAccounts(List<ExchangeUserService> exchangeUserServices) {
-        var accountDTOs = new ArrayList<AccountDTO>();
+        accountDTOs = new ArrayList<AccountDTO>();
         var futures = new ArrayList<CompletableFuture<Void>>();
         exchangeUserServices.forEach(exchangeUserService -> {
             futures.add(CompletableFuture.runAsync(() -> {
@@ -80,6 +87,7 @@ public class MainScheduler {
             }));
         });
         futures.forEach(CompletableFuture::join);
+
         return accountDTOs;
     }
 
@@ -109,6 +117,7 @@ public class MainScheduler {
         });
 
         // TODO: реализовать сохранение анализов в БД
+
         log.info("Account {} is analysed", account.getId());
     }
 

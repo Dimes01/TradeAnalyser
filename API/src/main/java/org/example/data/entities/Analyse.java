@@ -1,11 +1,15 @@
 package org.example.data.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.auth.models.User;
 
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "analysis")
 public class Analyse {
     @Id
