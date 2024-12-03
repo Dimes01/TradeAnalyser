@@ -70,10 +70,8 @@ public class MainScheduler {
     @Value("${services.main-scheduler.max-threads}")
     private int maxThreads;
 
-    private List<ExchangeUserService> exchangeUserServices;
-    private List<Account> accounts;
 
-    public void updateUsers() {
+    public void updateAll() {
         var users = userRepository.findAll();
         var exchangeUserServices = getExchangeUserServices(users);
         var accounts = getAccounts(exchangeUserServices);
@@ -81,7 +79,7 @@ public class MainScheduler {
     }
 
     private List<ExchangeUserService> getExchangeUserServices(List<User> users) {
-        exchangeUserServices = new ArrayList<>();
+        List<ExchangeUserService> exchangeUserServices = new ArrayList<>();
         users.forEach(user -> {
             var token = userService.decrypt(user.getToken());
             var interceptor = new AuthInterceptor(token);
@@ -95,24 +93,27 @@ public class MainScheduler {
     }
 
     private List<Account> getAccounts(List<ExchangeUserService> exchangeUserServices) {
-        accounts = new ArrayList<>();
-        var futures = new ArrayList<CompletableFuture<Void>>();
+        List<Account> accounts = new ArrayList<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(maxThreads);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
         exchangeUserServices.forEach(exchangeUserService -> {
             futures.add(CompletableFuture.runAsync(() -> {
                 accounts.addAll(exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL));
-                log.info("Got accounts from exchange user service {}", exchangeUserService);
-            }));
+                log.info("Got accounts from exchange user service {}", exchangeUserService.getUser().getId());
+            }, executorService));
         });
+
         futures.forEach(CompletableFuture::join);
         accountRepository.saveAll(accounts);
+        executorService.shutdown();
         return accounts;
     }
 
     private void analyseAccounts(List<Account> accounts) {
         try (ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads)) {
             for (var account : accounts) {
-                // TODO: написать получение безрисковой ставки и бенчмарка от пользователя
-                threadPool.submit(() -> analyseAccount(account, 0.08, 0.12));
+                threadPool.submit(() -> analyseAccount(account));
             }
             threadPool.shutdown();
         }
@@ -120,17 +121,21 @@ public class MainScheduler {
         log.info("Accounts are analysed");
     }
 
-    private void analyseAccount(Account account, Double riskFree, Double meanBenchmark) {
+    private void analyseAccount(Account account) {
         var futures = new ArrayList<CompletableFuture<Void>>();
         var positions = operationService.getPositions(account.getId());
 
         // Анализируем только ценные бумаги. Фьючерсы и опционы не анализируем
-        positions.getSecurities().forEach(securityPosition -> {
+        // TODO: какого-то хрена log.info(from.toString()) не выводится, а в отладчике до лога даже не доходит
+        var securities = positions.getSecurities();
+        var to = Instant.now();
+        var from = Instant.now().minus(1, ChronoUnit.YEARS);
+        log.info(from.toString());
+        securities.forEach(securityPosition -> {
             futures.add(CompletableFuture.runAsync(() -> {
-                var to = Instant.now();
-                var from = to.minus(1, ChronoUnit.YEARS);
                 var candles = quotesService.getHistoricCandles(securityPosition.getFigi(), to, from, CandleInterval.CANDLE_INTERVAL_DAY);
-                var analyse = MapperEntities.AnalyseResponseToAnalyse(analyseService.analyse(new AnalyseRequest(candles, riskFree, meanBenchmark)));
+                var analyseRequest = new AnalyseRequest(candles, account.getFiskFree(), account.getMeanBenchmark());
+                var analyse = MapperEntities.AnalyseResponseToAnalyse(analyseService.analyse(analyseRequest));
                 analyse.setSecuritiesUid(securityPosition.getFigi());
                 analyseRepository.save(analyse);
             }));

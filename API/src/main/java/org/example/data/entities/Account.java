@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.example.auth.models.User;
 
@@ -52,9 +53,9 @@ public class Account {
     @Max(value = 3, message = "Access level should be less or equal 3")
     private int accessLevel;
 
-    @NotBlank(message = "FiskFree is required")
-    private int fiskFree;
+    @Positive(message = "Risk free should be positive")
+    private double fiskFree;
 
-    @NotBlank(message = "MeanBenchmark is required")
-    private int meanBenchmark;
+    @Positive(message = "Mean of benchmark should be positive")
+    private double meanBenchmark;
 }

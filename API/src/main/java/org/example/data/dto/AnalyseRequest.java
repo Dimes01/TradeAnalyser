@@ -10,12 +10,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnalyseRequest {
-    @Size(min = 1, message = "At least one candle is required")
+    // TODO: изменить на передачу ISIN бумаги
+    @Size(min = 1, message = "At least one candle of target securities is required")
     private List<HistoricCandleDTO> candles;
 
     @Positive(message = "Risk free rate must be positive")
     private Double riskFree;
 
-    @Positive(message = "Mean benchmark must be positive")
+    // TODO: изменить с фиксированного коэффициента на передачу ISIN бумаги-бенчмарка
+    @Positive(message = "Mean benchmark rate must be positive")
     private Double meanBenchmark;
 }
