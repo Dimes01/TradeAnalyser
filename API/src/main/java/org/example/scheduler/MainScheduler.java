@@ -126,17 +126,16 @@ public class MainScheduler {
         var positions = operationService.getPositions(account.getId());
 
         // Анализируем только ценные бумаги. Фьючерсы и опционы не анализируем
-        // TODO: какого-то хрена log.info(from.toString()) не выводится, а в отладчике до лога даже не доходит
         var securities = positions.getSecurities();
         var to = Instant.now();
-        var from = Instant.now().minus(1, ChronoUnit.YEARS);
-        log.info(from.toString());
+        var from = to.minus(365, ChronoUnit.DAYS);
         securities.forEach(securityPosition -> {
             futures.add(CompletableFuture.runAsync(() -> {
                 var candles = quotesService.getHistoricCandles(securityPosition.getFigi(), to, from, CandleInterval.CANDLE_INTERVAL_DAY);
                 var analyseRequest = new AnalyseRequest(candles, account.getFiskFree(), account.getMeanBenchmark());
                 var analyse = MapperEntities.AnalyseResponseToAnalyse(analyseService.analyse(analyseRequest));
                 analyse.setSecuritiesUid(securityPosition.getFigi());
+                log.info(analyse.toString());
                 analyseRepository.save(analyse);
             }));
         });
