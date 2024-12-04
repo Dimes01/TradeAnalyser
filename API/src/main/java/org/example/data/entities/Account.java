@@ -52,10 +52,4 @@ public class Account {
     @Min(value = 0, message = "Access level should be non-negative")
     @Max(value = 3, message = "Access level should be less or equal 3")
     private int accessLevel;
-
-    @Positive(message = "Risk free should be positive")
-    private double fiskFree;
-
-    @Positive(message = "Mean of benchmark should be positive")
-    private double meanBenchmark;
 }

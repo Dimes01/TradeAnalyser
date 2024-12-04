@@ -17,8 +17,13 @@ import org.example.data.services.QuotesService;
 import org.example.data.utilities.AuthInterceptor;
 import org.example.data.utilities.MapperEntities;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.tinkoff.piapi.contract.v1.AccountStatus;
 import ru.tinkoff.piapi.contract.v1.CandleInterval;
@@ -27,9 +32,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * <u>MainScheduler</u> выполняет следующие задачи:
@@ -55,7 +58,7 @@ import java.util.concurrent.Executors;
 @PropertySource("classpath:")
 @Slf4j
 @RequiredArgsConstructor
-public class MainScheduler {
+public class MainScheduler implements ApplicationListener<ContextRefreshedEvent> {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AnalyseRepository analyseRepository;
@@ -71,13 +74,24 @@ public class MainScheduler {
     private int maxThreads;
 
 
+    @EventListener(ContextRefreshedEvent.class)
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        updateAll();
+    }
+
+    @Scheduled(fixedRate = 10000)
+    public void startTrade() throws ExecutionException, InterruptedException {
+        updateAll();
+    }
+
+
     public void updateAll() {
         var users = userRepository.findAll();
-        log.debug("Got {} users", users.size());
+        log.info("Got {} users", users.size());
         var exchangeUserServices = getExchangeUserServices(users);
-        log.debug("Got {} exchange user services", exchangeUserServices.size());
+        log.info("Got {} exchange user services", exchangeUserServices.size());
         var accounts = getAccounts(exchangeUserServices);
-        log.debug("Got {} accounts", accounts.size());
+        log.info("Got {} accounts", accounts.size());
         analyseAccounts(accounts);
     }
 
@@ -96,21 +110,20 @@ public class MainScheduler {
     }
 
     private List<Account> getAccounts(List<ExchangeUserService> exchangeUserServices) {
-        List<Account> accounts = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(maxThreads);
+        var accounts = new ConcurrentLinkedDeque<Account>();
         List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        exchangeUserServices.forEach(exchangeUserService -> {
-            futures.add(CompletableFuture.runAsync(() -> {
-                accounts.addAll(exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL));
-                log.info("Got accounts from exchange user service {}", exchangeUserService.getUser().getId());
-            }, executorService));
-        });
-
-        futures.forEach(CompletableFuture::join);
+        try (var executorService = Executors.newFixedThreadPool(maxThreads)) {
+            exchangeUserServices.forEach(exchangeUserService -> {
+                futures.add(CompletableFuture.runAsync(() -> {
+                    accounts.addAll(exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL));
+                    log.info("Got accounts from exchange user service of user {}", exchangeUserService.getUser().getId());
+                }, executorService));
+            });
+            futures.forEach(CompletableFuture::join);
+            executorService.shutdown();
+        }
         accountRepository.saveAll(accounts);
-        executorService.shutdown();
-        return accounts;
+        return accountRepository.findAll();
     }
 
     private void analyseAccounts(List<Account> accounts) {
@@ -125,6 +138,10 @@ public class MainScheduler {
     }
 
     private void analyseAccount(Account account) {
+        if (account.getFiskFree() <= 0 || account.getMeanBenchmark() <= 0) {
+            log.warn("Account {} is not analysed", account.getId());
+            return;
+        }
         var futures = new ArrayList<CompletableFuture<Void>>();
         var positions = operationService.getPositions(account.getId());
 
@@ -132,6 +149,9 @@ public class MainScheduler {
         var securities = positions.getSecurities();
         var to = Instant.now();
         var from = to.minus(365, ChronoUnit.DAYS);
+        log.debug(to.toString());
+        log.debug(from.toString());
+        log.debug(String.valueOf(securities.size()));
         securities.forEach(securityPosition -> {
             futures.add(CompletableFuture.runAsync(() -> {
                 var candles = quotesService.getHistoricCandles(securityPosition.getFigi(), to, from, CandleInterval.CANDLE_INTERVAL_DAY);
@@ -145,11 +165,4 @@ public class MainScheduler {
         futures.forEach(CompletableFuture::join);
         log.info("Account {} is analysed", account.getId());
     }
-
-
-//    @Scheduled(cron = "0 50 9 * * 1-5")
-//    public void startTrade() throws ExecutionException, InterruptedException {
-//        var result = userServices.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL);
-//        System.out.println(result);
-//    }
 }

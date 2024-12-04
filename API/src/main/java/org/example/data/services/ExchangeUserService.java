@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import ru.tinkoff.piapi.contract.v1.AccountStatus;
 import ru.tinkoff.piapi.core.InvestApi;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -33,7 +34,7 @@ public class ExchangeUserService {
     public List<Account> getAccounts(AccountStatus status) {
         logger.info("Method 'getAccounts': started");
         var result = api.getUserService().getAccounts(status);
-        List<Account> accounts = null;
+        List<Account> accounts = Collections.emptyList();
         try {
             accounts = result.get()
                 .stream()
