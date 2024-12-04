@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -32,6 +33,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).
             authorizeHttpRequests(request -> request
+                .requestMatchers("/api/account/{username}")
+                    .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
                 .requestMatchers("login", "register").permitAll()
                 .anyRequest().authenticated()).
             httpBasic(Customizer.withDefaults()).

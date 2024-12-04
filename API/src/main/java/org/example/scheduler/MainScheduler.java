@@ -73,8 +73,11 @@ public class MainScheduler {
 
     public void updateAll() {
         var users = userRepository.findAll();
+        log.debug("Got {} users", users.size());
         var exchangeUserServices = getExchangeUserServices(users);
+        log.debug("Got {} exchange user services", exchangeUserServices.size());
         var accounts = getAccounts(exchangeUserServices);
+        log.debug("Got {} accounts", accounts.size());
         analyseAccounts(accounts);
     }
 
