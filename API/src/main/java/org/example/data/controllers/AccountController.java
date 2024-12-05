@@ -16,11 +16,12 @@ import java.util.List;
 public class AccountController {
     private final AccountService accountService;
 
+    // TODO: реализовать авторизацию через указание в SecurityConfiguration
     @GetMapping("/{username}")
-    public ResponseEntity<List<String>> getAccountIds(
+    public ResponseEntity<List<String>> getAccountsByUsername(
         @PathVariable @NotBlank String username
     ) {
-        var accounts = accountService.getAccountsIds(username);
+        var accounts = accountService.getAccountsByUsername(username);
         var accountIds = accounts.stream().map(Account::getId).toList();
         return ResponseEntity.ok(accountIds);
     }

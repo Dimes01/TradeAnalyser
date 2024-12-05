@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.auth.dto.LoginRequest;
 import org.example.auth.dto.LoginResponse;
 import org.example.auth.dto.RegisterRequest;
+import org.example.auth.dto.RegisterResponse;
 import org.example.auth.models.User;
 import org.example.auth.repositories.UserRepository;
+import org.example.auth.utilities.CryptUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,55 +36,25 @@ public class UserService {
     private final AuthenticationManager authManager;
     private final UserRepository repo;
 
-    @Value("${jwt.secret}")
-    private String KEY_ENV_VAR;
-
-    private final String ALGORITHM = "AES";
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public void register(RegisterRequest request) throws Exception {
-        repo.save(new User(request.getUsername(), encoder.encode(request.getPassword()), encrypt(request.getApiKey())));
+    public RegisterResponse register(RegisterRequest request) {
+        try {
+            var user = new User(request.getUsername(), encoder.encode(request.getPassword()), CryptUtil.encrypt(request.getApiKey()));
+            repo.save(user);
+            return new RegisterResponse(user.getUsername(), true, false);
+        } catch (Exception e) {
+            log.error("Method 'register': could not register user with username '{}'", request.getUsername());
+            return new RegisterResponse(request.getUsername(), false, false);
+        }
     }
 
     public LoginResponse verify(LoginRequest request) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         if (authentication.isAuthenticated()) {
-            return new LoginResponse(jwtService.generateToken(request.getUsername()));
+            return new LoginResponse(jwtService.generateToken(request.getUsername()), true);
         } else {
-            return null;
+            return new LoginResponse(null, false);
         }
-    }
-
-    public String encrypt(String valueToEnc) throws Exception {
-        Key key = generateKey();
-        Cipher c = Cipher.getInstance(ALGORITHM);
-        c.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encValue = c.doFinal(valueToEnc.getBytes());
-        return Base64.getEncoder().encodeToString(encValue);
-    }
-
-    public String decrypt(String encryptedValue) {
-        byte[] decryptedValue = new byte[0];
-        try {
-            Cipher c = Cipher.getInstance(ALGORITHM);
-            c.init(Cipher.DECRYPT_MODE, generateKey());
-            byte[] decValue = Base64.getDecoder().decode(encryptedValue);
-            decryptedValue = c.doFinal(decValue);
-        } catch (NoSuchAlgorithmException e) {
-            log.error("Method 'decrypt': algorithm not found");
-        } catch (NoSuchPaddingException e) {
-            log.error("Method 'decrypt': could not get instance of cipher");
-        } catch (InvalidKeyException e) {
-            log.error("Method 'decrypt': key is invalid");
-        } catch (IllegalBlockSizeException e) {
-            log.error("Method 'decrypt': illegal block size");
-        } catch (BadPaddingException e) {
-            log.error("Method 'decrypt': bad padding");
-        }
-        return new String(decryptedValue);
-    }
-
-    private Key generateKey() {
-        return new SecretKeySpec(KEY_ENV_VAR.getBytes(), ALGORITHM);
     }
 }

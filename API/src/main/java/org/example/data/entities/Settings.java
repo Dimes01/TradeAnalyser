@@ -18,7 +18,7 @@ public class Settings {
 
     @OneToOne
     @JoinColumn(name = "account_id")
-    private String accountId;
+    private Account account;
 
     @Positive(message = "Risk free should be a positive number")
     private double fiskFree;

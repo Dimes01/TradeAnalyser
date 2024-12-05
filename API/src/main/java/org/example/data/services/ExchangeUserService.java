@@ -27,7 +27,7 @@ public class ExchangeUserService {
     private final InvestApi api;
     @Setter @Getter private User user;
 
-    public ExchangeUserService(@Autowired Channel channel) {
+    public ExchangeUserService(Channel channel) {
         this.api = InvestApi.createReadonly(channel);
     }
 
