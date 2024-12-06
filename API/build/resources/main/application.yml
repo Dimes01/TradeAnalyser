@@ -1,4 +1,7 @@
 spring:
+#  autoconfigure:
+#    exclude:
+#      - io.grpc.Channel
   datasource:
     initialization-mode: always
     name: postgres

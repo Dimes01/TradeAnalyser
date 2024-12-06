@@ -84,7 +84,6 @@ class ApplicationTest {
 
     private fun testInvalidCandle(candle: Candle) = testApplication {
         application { this.module() }
-        install(ContentNegotiation) { json() }
         assertThrows<RequestValidationException> {
             val incorrectRequest = AnalyseRequest(
                 candles = listOf(candle),
@@ -101,7 +100,6 @@ class ApplicationTest {
     @Test
     fun analyse_correctRequest_correctResponse() = testApplication {
         application{ this.module() }
-        install(ContentNegotiation) { json() }
         client.post("/analyse"){
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(AnalyseRequest(candles, riskFree, meanBenchmark)))
@@ -114,7 +112,6 @@ class ApplicationTest {
     @Test
     fun analyse_incorrectRiskFree_throwRequestValidationException() = testApplication {
         application { this.module() }
-        install(ContentNegotiation) { json() }
         assertThrows<RequestValidationException> {
             client.post("/analyse"){
                 contentType(ContentType.Application.Json)
@@ -126,7 +123,6 @@ class ApplicationTest {
     @Test
     fun analyse_incorrectMeanBenchmark_throwRequestValidationException() = testApplication {
         application { this.module() }
-        install(ContentNegotiation) { json() }
         assertThrows<RequestValidationException> {
             client.post("/analyse"){
                 contentType(ContentType.Application.Json)
