@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.AnalyseRequest;
 import org.example.dto.AnalyseResponse;
 import org.example.entities.Account;
+import org.example.entities.LatestAnalyse;
+import org.example.repositories.LatestAnalyseRepository;
 import org.example.services.AccountService;
 import org.example.services.AnalyseService;
 import org.example.services.SettingsService;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/account")
 @RequiredArgsConstructor
 public class AccountController {
+    private final LatestAnalyseRepository latestAnalyseRepository;
 
     private final AccountService accountService;
     private final SettingsService settingsService;
@@ -36,10 +39,19 @@ public class AccountController {
         return ResponseEntity.ok(accountIds);
     }
 
-    @PostMapping("/{username}/{accountId}/analyse/securities")
-    public ResponseEntity<AnalyseResponse> analyse(
-        @RequestBody AnalyseRequest analyseRequest) {
-        return ResponseEntity.ok(analyseService.analyse(analyseRequest));
+    @GetMapping("/{username}/{accountId}/analyse/securities")
+    public ResponseEntity<List<LatestAnalyse>> analyse(
+        @PathVariable @NotBlank String accountId
+    ) {
+        return ResponseEntity.ok(latestAnalyseRepository.findByAccountId(accountId));
+    }
+
+    @GetMapping("/{username}/{accountId}/analyse/securities/{securitiesId}")
+    public ResponseEntity<LatestAnalyse> analyse(
+        @PathVariable @NotBlank String accountId,
+        @PathVariable @NotBlank String securitiesId
+    ) {
+        return ResponseEntity.ok(latestAnalyseRepository.findByAccountIdAndSecuritiesUid(accountId, securitiesId));
     }
 
     @PutMapping("/{username}/{accountId}/risk-free/{newValue}")

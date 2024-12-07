@@ -1,23 +1,29 @@
 package org.example.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.Immutable;
 
 import java.time.Instant;
 
 @Builder
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "analysis")
-public class Analyse {
+
+@Entity
+@Immutable
+@Table(name = "latest_analysis")
+public class LatestAnalyse {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @Column(name = "account_id")
+    private String accountId;
 
     @Column(name = "securities_uid")
     private String securitiesUid;

@@ -1,7 +1,7 @@
 spring:
-#  autoconfigure:
-#    exclude:
-#      - io.grpc.Channel
+  security:
+    jwt:
+      time-to-live: PT15M
   datasource:
     initialization-mode: always
     name: postgres

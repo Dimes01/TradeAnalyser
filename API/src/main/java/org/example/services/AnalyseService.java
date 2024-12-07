@@ -2,8 +2,8 @@ package org.example.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.AnalyseRequest;
-import org.example.dto.AnalyseResponse;
+import org.example.dto.internal.AnalyseRequest;
+import org.example.dto.internal.AnalyseResponse;
 import org.example.entities.Analyse;
 import org.example.repositories.AnalyseRepository;
 import org.springframework.http.MediaType;

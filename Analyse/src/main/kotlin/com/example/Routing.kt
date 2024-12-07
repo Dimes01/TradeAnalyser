@@ -23,6 +23,7 @@ fun Application.configureRouting() {
                 coefInformation = service.coefInformation(profits, request.meanBenchmark),
                 coefSortino = service.coefSortino(profits, request.riskFree)
             )
+            log.info(result.toString())
             call.respond(result)
         }
     }

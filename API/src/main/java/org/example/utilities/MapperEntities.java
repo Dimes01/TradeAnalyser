@@ -1,6 +1,6 @@
 package org.example.utilities;
 
-import org.example.dto.AnalyseResponse;
+import org.example.dto.internal.AnalyseResponse;
 import org.example.entities.Analyse;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.core.utils.DateUtils;

@@ -3,7 +3,7 @@ package org.example.scheduler;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.AnalyseRequest;
+import org.example.dto.internal.AnalyseRequest;
 import org.example.entities.Account;
 import org.example.entities.Analyse;
 import org.example.repositories.AccountRepository;
@@ -53,7 +53,7 @@ public class AnalyseScheduler {
         quotesService = new QuotesService_T_API(channels.withDecryptedToken(commonToken));
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 60000)
     public void analyse() {
         log.info("Analyse scheduler started");
         var accounts = accountRepository.findAll();
@@ -81,8 +81,8 @@ public class AnalyseScheduler {
                 var from = now.minus(365, ChronoUnit.DAYS);
                 var candles = quotesService.getHistoricCandles(security.getFigi(), from, now, CandleInterval.CANDLE_INTERVAL_DAY);
                 var request = new AnalyseRequest(candles, settings.getFiskFree(), settings.getMeanBenchmark());
-                var analyse = MapperEntities.AnalyseResponseToAnalyse(
-                    analyseService.analyse(request), from, now, account, security.getFigi());
+                var response = analyseService.analyse(request);
+                var analyse = MapperEntities.AnalyseResponseToAnalyse(response, from, now, account, security.getFigi());
                 analysis.add(analyse);
             }));
         });
