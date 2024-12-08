@@ -27,7 +27,6 @@ public class AccountController {
 
     private final AccountService accountService;
     private final SettingsService settingsService;
-    private final AnalyseService analyseService;
 
 
     @GetMapping("/{username}/accounts")

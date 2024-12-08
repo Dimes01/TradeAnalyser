@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "users")
 public class User {
     public User(String username, String password, String token) {

@@ -60,9 +60,12 @@ tasks.jacocoTestReport {
     }
     classDirectories.setFrom(files(classDirectories.files.map {
         fileTree(it) {
+            exclude("**/models/**")
             exclude("**/entities/**")
             exclude("**/dto/**")
             exclude("**/utilities/**")
+            exclude("**/configurations/**")
+            exclude("**/repositories/**")
             exclude("**/TradeAnalyserAuthApplication.java")
         }
     }))

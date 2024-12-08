@@ -1,15 +1,15 @@
 package org.example.services;
 
-import io.grpc.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.repositories.UserRepository;
 import org.example.entities.Account;
 import org.example.repositories.AccountRepository;
 import org.example.services.t_api.UserService_T_API;
-import org.example.utilities.Channels;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.tinkoff.piapi.contract.v1.AccountStatus;
+import ru.tinkoff.piapi.core.InvestApi;
 
 import java.util.List;
 
@@ -19,22 +19,18 @@ import java.util.List;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final Channels channels;
 
     public List<Account> getAccountsByUsername(String username) {
-        var userId = userRepository.findByUsername(username).getId();
-        return accountRepository.findAccountsByUserId(userId);
+        var user = userRepository.findByUsername(username);
+        if (user == null) {
+            log.error("Username not found!");
+            throw new UsernameNotFoundException(username);
+        }
+        return accountRepository.findAccountsByUserId(user.getId());
     }
 
     public boolean updateAccountsByApiKey(String decryptedToken) {
-        Channel channel;
-        try {
-            channel = channels.withDecryptedToken(decryptedToken);
-        } catch (Exception e) {
-            log.error("Failed to decrypt token: {}", e.getMessage());
-            return false;
-        }
-        var exchangeUserService = new UserService_T_API(channel);
+        var exchangeUserService = new UserService_T_API(InvestApi.createReadonly(decryptedToken));
         var accounts = exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL);
         accountRepository.saveAll(accounts);
         log.info("Accounts updated");

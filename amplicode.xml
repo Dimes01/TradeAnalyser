@@ -5,7 +5,7 @@
   </component>
   <component name="AmplicodePersistenceUnitSettings">
     <persistence-units>
-      <persistence-unit moduleName="API.main" name="Default">
+      <persistence-unit moduleName="API.main" name="Default" defaultSearchScope="Project">
         <packages>
           <package value="org.example" />
         </packages>

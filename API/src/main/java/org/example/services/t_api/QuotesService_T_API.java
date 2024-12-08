@@ -1,6 +1,7 @@
 package org.example.services.t_api;
 
 import io.grpc.Channel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.HistoricCandleDTO;
 import org.example.dto.LastPriceDTO;
@@ -20,12 +21,9 @@ import java.util.concurrent.ExecutionException;
 //@Service
 
 @Slf4j
+@RequiredArgsConstructor
 public class QuotesService_T_API {
     private final InvestApi api;
-
-    public QuotesService_T_API(Channel channel) {
-        this.api = InvestApi.createReadonly(channel);
-    }
 
     public List<LastPriceDTO> getLastPrices(Iterable<String> idsInstruments) throws ExecutionException, InterruptedException {
         log.info("Method 'getLastPrice': started");

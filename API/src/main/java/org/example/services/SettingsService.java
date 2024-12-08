@@ -22,21 +22,12 @@ public class SettingsService {
         return settingsRepository.findByAccountId(accountId);
     }
 
-//
-//    public boolean updateApiKEy(String accountId, String apiKEy) {
-//        var settings = settingsRepository.findByAccountId(accountId);
-//        if (settings == null) return false;
-//
-//        settings.setToken(apiKEy);
-//        settingsRepository.save(settings);
-//        return true;
-//    }
 
     public boolean updateRiskFree(String accountId, double riskFree) {
         var settings = settingsRepository.findByAccountId(accountId);
         if (settings == null) return false;
 
-        settings.setFiskFree(riskFree);
+        settings.setRiskFree(riskFree);
         settingsRepository.save(settings);
         return true;
     }

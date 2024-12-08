@@ -1,6 +1,7 @@
 package org.example.services.t_api;
 
 import io.grpc.Channel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.tinkoff.piapi.core.InvestApi;
 import ru.tinkoff.piapi.core.models.Positions;
@@ -13,12 +14,9 @@ import java.util.concurrent.ExecutionException;
 //@Service
 
 @Slf4j
+@RequiredArgsConstructor
 public class OperationService_T_API {
     private final InvestApi api;
-
-    public OperationService_T_API(Channel channel) {
-        this.api = InvestApi.createReadonly(channel);
-    }
 
     public Positions getPositions(String idAccount) {
         log.info("Method 'getPositions': started");

@@ -21,7 +21,7 @@ public class Settings {
     private Account account;
 
     @Positive(message = "Risk free should be a positive number")
-    private double fiskFree;
+    private double riskFree;
 
     @Positive(message = "Mean of benchmark should be a positive number")
     private double meanBenchmark;

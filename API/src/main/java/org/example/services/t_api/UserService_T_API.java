@@ -2,6 +2,7 @@ package org.example.services.t_api;
 
 import io.grpc.Channel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entities.User;
@@ -20,14 +21,12 @@ import java.util.concurrent.ExecutionException;
 //@Service
 
 @Slf4j
+@RequiredArgsConstructor
 public class UserService_T_API {
 
     private final InvestApi api;
     @Getter @Setter private User user;
 
-    public UserService_T_API(Channel channel) {
-        this.api = InvestApi.createReadonly(channel);
-    }
 
     public List<Account> getAccounts(AccountStatus status) {
         log.info("Method 'getAccounts': started");
