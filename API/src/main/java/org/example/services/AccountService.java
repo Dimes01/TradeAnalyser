@@ -32,6 +32,10 @@ public class AccountService {
     public boolean updateAccountsByApiKey(String decryptedToken) {
         var exchangeUserService = new UserService_T_API(InvestApi.createReadonly(decryptedToken));
         var accounts = exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL);
+        if (accounts.isEmpty()) {
+            log.warn("Accounts not found");
+            return false;
+        }
         accountRepository.saveAll(accounts);
         log.info("Accounts updated");
         return true;
