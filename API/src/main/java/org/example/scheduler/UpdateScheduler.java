@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 public class UpdateScheduler {
     private final UserRepository userRepository;
     private final AccountService accountService;
+    private final CryptUtil cryptUtil;
 
     @Value("${services.main-scheduler.max-threads}")
     private int maxThreads;
@@ -32,7 +33,6 @@ public class UpdateScheduler {
     public void update() {
         log.info("Update scheduler started");
         var users = userRepository.findAll();
-        var accounts = new ConcurrentLinkedDeque<Account>();
         var futures = new LinkedList<CompletableFuture<Void>>();
         try (var userExecutor = Executors.newFixedThreadPool(maxThreads)) {
             users.forEach(user -> {
@@ -48,7 +48,7 @@ public class UpdateScheduler {
     private void updateUser(User user) {
         String token = null;
         try {
-            token = CryptUtil.decrypt(user.getToken());
+            token = cryptUtil.decrypt(user.getToken());
         } catch (Exception e) {
             log.error("Error while decrypting token");
         }

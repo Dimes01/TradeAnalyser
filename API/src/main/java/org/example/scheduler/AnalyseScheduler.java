@@ -50,7 +50,7 @@ public class AnalyseScheduler {
         quotesService = new QuotesService_T_API(InvestApi.createReadonly(commonToken));
     }
 
-    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)
     public void analyse() {
         log.info("Analyse scheduler started");
         var accounts = accountRepository.findAll();

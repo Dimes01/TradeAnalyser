@@ -78,9 +78,6 @@ public class AccountControllerTest {
 
     @Container
     public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
-        .withDatabaseName("testdb")
-        .withUsername("username")
-        .withPassword("password")
         .withInitScript("initdb.sql");
 
     @BeforeAll
@@ -124,8 +121,7 @@ public class AccountControllerTest {
 
         // Act & Assert
         String returnedAccountsString = mockMvc.perform(get("/api/account/{username}/accounts", "incorrectUsername")
-                .with(SecurityMockMvcRequestPostProcessors.csrf())
-                .with(SecurityMockMvcRequestPostProcessors.user("incorrectUsername")))
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isUnauthorized())
             .andReturn().getResponse().getContentAsString();
         assertThrows(MismatchedInputException.class, () -> utilMapper.readValue(returnedAccountsString, new TypeReference<List<String>>() {}));

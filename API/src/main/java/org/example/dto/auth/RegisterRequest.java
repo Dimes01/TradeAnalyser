@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
-    @NotBlank
+    @NotBlank(message = "Username can not be blank")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password can not be blank")
     private String password;
 
     @JsonProperty("api_key")
-    @NotBlank
+    @NotBlank(message = "Api key can not be blank")
     private String apiKey;
 }
