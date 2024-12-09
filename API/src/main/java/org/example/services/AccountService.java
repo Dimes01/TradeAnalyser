@@ -2,6 +2,7 @@ package org.example.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.entities.User;
 import org.example.repositories.UserRepository;
 import org.example.entities.Account;
 import org.example.repositories.AccountRepository;
@@ -20,6 +21,10 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
+    public Account getAccountById(String accountId) {
+        return accountRepository.getReferenceById(accountId);
+    }
+
     public List<Account> getAccountsByUsername(String username) {
         var user = userRepository.findByUsername(username);
         if (user == null) {
@@ -29,13 +34,14 @@ public class AccountService {
         return accountRepository.findAccountsByUserId(user.getId());
     }
 
-    public boolean updateAccountsByApiKey(String decryptedToken) {
+    public boolean updateAccountsByApiKey(String decryptedToken, User user) {
         var exchangeUserService = new UserService_T_API(InvestApi.createReadonly(decryptedToken));
         var accounts = exchangeUserService.getAccounts(AccountStatus.ACCOUNT_STATUS_ALL);
         if (accounts.isEmpty()) {
             log.warn("Accounts not found");
             return false;
         }
+        accounts.forEach(x -> x.setUser(user));
         accountRepository.saveAll(accounts);
         log.info("Accounts updated");
         return true;

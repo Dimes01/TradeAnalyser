@@ -23,6 +23,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+        // TODO: поменяй возвращаемый тип с RegisterResponse на User, который можно использовать для обновления счетов в методе ниже
         var response = service.register(request);
         response.setSuccessGetAccounts(accountService.updateAccountsByApiKey(request.getApiKey()));
         return ResponseEntity.ok(response);

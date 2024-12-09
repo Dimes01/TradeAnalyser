@@ -1,5 +1,6 @@
 package org.example.utilities.exceptions;
 
+import jakarta.persistence.EntityExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlingControllerAdvice {
 
-    @ExceptionHandler(UsernameAlreadyExists.class)
-    public ResponseEntity<ErrorMessage> handleUsernameAlreadyExists(UsernameAlreadyExists e) {
+    @ExceptionHandler(EntityExistsException.class)
+    public ResponseEntity<ErrorMessage> handleUsernameAlreadyExists(EntityExistsException e) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content type", "application/json");
         return new ResponseEntity<>(

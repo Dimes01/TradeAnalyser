@@ -52,7 +52,7 @@ public class UpdateScheduler {
         } catch (Exception e) {
             log.error("Error while decrypting token");
         }
-        if (accountService.updateAccountsByApiKey(token))
+        if (accountService.updateAccountsByApiKey(token, user))
             log.info("Successfully updated accounts of user!");
         else
             log.warn("Not successfully updated accounts of user!");

@@ -1,5 +1,6 @@
 package org.example.services.auth;
 
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.auth.LoginRequest;
@@ -9,7 +10,6 @@ import org.example.dto.auth.RegisterResponse;
 import org.example.entities.User;
 import org.example.repositories.UserRepository;
 import org.example.utilities.CryptUtil;
-import org.example.utilities.exceptions.UsernameAlreadyExists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ public class UserService {
 
     public RegisterResponse register(RegisterRequest request) {
         if (repo.findByUsername(request.getUsername()) != null)
-            throw new UsernameAlreadyExists(String.format("Username '%s' already exists!", request.getUsername()));
+            throw new EntityExistsException(String.format("Username '%s' already exists!", request.getUsername()));
         repo.save(new User(request.getUsername(), encoder.encode(request.getPassword()), cryptUtil.encrypt(request.getApiKey())));
         return new RegisterResponse(request.getUsername(), true, false);
     }

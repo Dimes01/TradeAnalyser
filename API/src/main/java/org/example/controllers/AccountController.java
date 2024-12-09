@@ -1,10 +1,12 @@
 package org.example.controllers;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.AnalyseRequest;
 import org.example.dto.AnalyseResponse;
+import org.example.dto.CreateSettings;
 import org.example.entities.Account;
 import org.example.entities.LatestAnalyse;
 import org.example.repositories.LatestAnalyseRepository;
@@ -13,12 +15,14 @@ import org.example.services.AnalyseService;
 import org.example.services.SettingsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 // username в url добавлен только для авторизации
 
+@Validated
 @RestController
 @RequestMapping("/api/account")
 @RequiredArgsConstructor
@@ -38,12 +42,33 @@ public class AccountController {
         return ResponseEntity.ok(accountIds);
     }
 
+
+    @PostMapping("/{username}/{accountId}/settings")
+    public ResponseEntity<Void> createSettings(
+        @RequestBody CreateSettings settings
+    ) {
+        var account = accountService.getAccountById(settings.getAccountId());
+        settingsService.createSettings(settings, account);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @DeleteMapping("/{username}/{accountId}/settings/{settingsId}")
+    public ResponseEntity<Void> deleteSettings(
+        @PathVariable @NotNull Long settingsId
+    ) {
+        settingsService.deleteSettings(settingsId);
+        return ResponseEntity.ok().build();
+    }
+
+
     @GetMapping("/{username}/{accountId}/analyse/securities")
     public ResponseEntity<List<LatestAnalyse>> analyse(
         @PathVariable @NotBlank String accountId
     ) {
         return ResponseEntity.ok(latestAnalyseRepository.findByAccountId(accountId));
     }
+
 
     @GetMapping("/{username}/{accountId}/analyse/securities/{securitiesId}")
     public ResponseEntity<LatestAnalyse> analyse(
@@ -52,6 +77,7 @@ public class AccountController {
     ) {
         return ResponseEntity.ok(latestAnalyseRepository.findByAccountIdAndSecuritiesUid(accountId, securitiesId));
     }
+
 
     @PutMapping("/{username}/{accountId}/risk-free/{newValue}")
     public ResponseEntity<Void> setRiskFree(
@@ -62,6 +88,7 @@ public class AccountController {
             return ResponseEntity.ok().build();
         return ResponseEntity.noContent().build();
     }
+
 
     @PutMapping("/{username}/{accountId}/mean-benchmark/{newValue}")
     public ResponseEntity<Void> setMeanBenchmark(
