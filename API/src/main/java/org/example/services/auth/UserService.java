@@ -35,8 +35,9 @@ public class UserService {
 
     public User register(RegisterRequest request) {
         var user = repo.findByUsername(request.getUsername());
-        if (user != null)
+        if (user != null) {
             throw new EntityExistsException(String.format("Username '%s' already exists!", request.getUsername()));
+        }
         user = new User(request.getUsername(), encoder.encode(request.getPassword()), cryptUtil.encrypt(request.getApiKey()));
         repo.save(user);
         return user;
@@ -49,5 +50,11 @@ public class UserService {
         } else {
             return new LoginResponse(null, false);
         }
+    }
+
+    public void changeToken(String username, String token) {
+        var user = repo.findByUsername(username);
+        user.setToken(token);
+        repo.save(user);
     }
 }

@@ -82,7 +82,13 @@ public class AnalyseScheduler {
                     log.warn("There is not a single candle!");
                     return;
                 }
-                var request = new AnalyseRequest(candles, settings.getRiskFree(), settings.getMeanBenchmark());
+                double partOfYear = (now.getEpochSecond() - from.getEpochSecond()) / (86400.0 * 365);
+                var actualRiskFree = settings.getRiskFree() * partOfYear;
+
+                // TODO: расчёт mean of benchmark не совсем верный и лучше считать его на свечах актива, которые были в указанный период
+                var actualMeanBenchmark = settings.getMeanBenchmark() * partOfYear;
+
+                var request = new AnalyseRequest(candles, actualRiskFree, actualMeanBenchmark);
                 var response = analyseService.analyse(request);
                 var analyse = MapperEntities.AnalyseResponseToAnalyse(response, from, now, account, security.getFigi());
                 analysis.add(analyse);

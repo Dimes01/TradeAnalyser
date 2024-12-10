@@ -34,7 +34,8 @@ public class UpdateScheduler {
         log.info("Update scheduler started");
         var users = userRepository.findAll();
         var futures = new LinkedList<CompletableFuture<Void>>();
-        log.info("Start updating users");
+        if (!users.isEmpty())
+            log.info("Start updating users");
         try (var userExecutor = Executors.newFixedThreadPool(maxThreads)) {
             users.forEach(user -> {
                 futures.add(CompletableFuture.runAsync(() -> {

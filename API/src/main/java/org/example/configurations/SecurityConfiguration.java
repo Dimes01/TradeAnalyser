@@ -43,9 +43,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).
             authorizeHttpRequests(request -> request
-                .requestMatchers("/api/account/{username}/**")
+                .requestMatchers("/api/user/register", "/api/user/login", "/instruments/shares/{uid}").permitAll()
+                .requestMatchers("/api/account/{username}/**", "/api/user/token/{username}/**")
                     .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
-                .requestMatchers("login", "register").permitAll()
                 .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

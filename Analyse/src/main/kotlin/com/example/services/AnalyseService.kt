@@ -72,6 +72,7 @@ class AnalyseService {
         logger.info("Method 'coefSortino': start")
         val mean = profitability.map { it - riskFree }.average()
         val stdDev = stdDev(profitability.map { if (it <= riskFree) it else 0.0 }.toTypedArray())
+        if (stdDev == 0.0) return 0.0
         return (mean / stdDev).also { logger.info("Method 'coefSortino': finish") }
     }
 }

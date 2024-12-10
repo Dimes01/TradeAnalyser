@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.internal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

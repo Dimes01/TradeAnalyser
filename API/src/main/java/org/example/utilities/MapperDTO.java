@@ -1,6 +1,6 @@
 package org.example.utilities;
 
-import org.example.dto.HistoricCandleDTO;
+import org.example.dto.internal.HistoricCandleDTO;
 import org.example.dto.LastPriceDTO;
 import ru.tinkoff.piapi.contract.v1.HistoricCandle;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
