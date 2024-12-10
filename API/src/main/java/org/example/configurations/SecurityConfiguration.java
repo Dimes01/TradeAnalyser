@@ -43,11 +43,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).
             authorizeHttpRequests(request -> request
-                .requestMatchers("/api/user/register", "/api/user/login", "/instruments/shares/{uid}").permitAll()
                 .requestMatchers("/api/account/{username}/**", "/api/user/token/{username}/**")
                     .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
-                .anyRequest().authenticated())
-            .httpBasic(Customizer.withDefaults())
+                .anyRequest().permitAll())
+                .httpBasic(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

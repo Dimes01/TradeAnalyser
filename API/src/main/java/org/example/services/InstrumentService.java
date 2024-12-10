@@ -8,7 +8,6 @@ import org.example.services.t_api.InstrumentsService_T_API;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import ru.tinkoff.piapi.contract.v1.Share;
 import ru.tinkoff.piapi.core.InvestApi;
 
 
@@ -28,7 +27,11 @@ public class InstrumentService {
         instrumentsService_t_api = new InstrumentsService_T_API(InvestApi.createReadonly(commonToken));
     }
 
-    public ShareDTO getShareByUid(String uid) {
-        return ShareDTO.fromResponse(instrumentsService_t_api.getShareByUid(uid));
+    public ShareDTO getShareByFigi(String figi) {
+        log.info("Method 'getShareByFigi' is started");
+        log.debug("Method 'getShareByFigi': figi - {}", figi);
+        var shareDto = ShareDTO.fromResponse(instrumentsService_t_api.getShareByFigi(figi));
+        log.info("Method 'getShareByFigi' is finished");
+        return shareDto;
     }
 }

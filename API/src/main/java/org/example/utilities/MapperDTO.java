@@ -29,7 +29,7 @@ public class MapperDTO {
             DateUtils.timestampToInstant(historicCandle.getTime()),
             historicCandle.getIsComplete(),
             historicCandle.getVolume(),
-            historicCandle.getCandleSourceValue()
+            historicCandle.getCandleSourceTypeValue()
         );
     }
 }

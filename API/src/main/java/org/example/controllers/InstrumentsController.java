@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.ShareDTO;
 import org.example.services.InstrumentService;
-import org.example.services.t_api.InstrumentsService_T_API;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,13 +15,20 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
-@RequestMapping("/instruments")
+@RequestMapping("/api/instruments")
 @RequiredArgsConstructor
 public class InstrumentsController {
     private final InstrumentService instrumentsService;
 
-    @GetMapping("/shares/{uid}")
-    public ResponseEntity<ShareDTO> getShareByUid(@PathVariable @NotBlank String uid) {
-        return ResponseEntity.ok(instrumentsService.getShareByUid(uid));
-    }
+    // Получить информацию о бумаге невозможно, из-за того, что классы-модели, предоставляемые в JDK используют
+    // устаревший идентификатор FIGI, который судя по документации к T-Invest API не рекомендуется к использованию.
+    // Попытка использовать FIGI приводит к ошибке о неправильном идентификаторе, хотя идентификатор получен от T-Invest API
+
+//    @GetMapping("/shares/{figi}")
+//    public ResponseEntity<ShareDTO> getShareByFigi(@PathVariable @NotBlank String figi) {
+//        log.info("Endpoint /api/instruments/shares/{figi} is started");
+//        var share = instrumentsService.getShareByFigi(figi);
+//        log.info("Endpoint /api/instruments/shares/{figi} is finished");
+//        return ResponseEntity.ok(share);
+//    }
 }
