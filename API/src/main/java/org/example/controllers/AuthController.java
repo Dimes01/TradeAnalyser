@@ -23,14 +23,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        // TODO: поменяй возвращаемый тип с RegisterResponse на User, который можно использовать для обновления счетов в методе ниже
-        var response = service.register(request);
-        response.setSuccessGetAccounts(accountService.updateAccountsByApiKey(request.getApiKey()));
+        var user = service.register(request);
+        var response = new RegisterResponse(user.getUsername(), true, false);
+        response.setSuccessGetAccounts(accountService.updateAccountsByApiKey(request.getApiKey(), user));
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Validated @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(service.verify(request));
     }
 }

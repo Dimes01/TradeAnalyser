@@ -33,11 +33,13 @@ public class UserService {
     private final UserRepository repo;
 
 
-    public RegisterResponse register(RegisterRequest request) {
-        if (repo.findByUsername(request.getUsername()) != null)
+    public User register(RegisterRequest request) {
+        var user = repo.findByUsername(request.getUsername());
+        if (user != null)
             throw new EntityExistsException(String.format("Username '%s' already exists!", request.getUsername()));
-        repo.save(new User(request.getUsername(), encoder.encode(request.getPassword()), cryptUtil.encrypt(request.getApiKey())));
-        return new RegisterResponse(request.getUsername(), true, false);
+        user = new User(request.getUsername(), encoder.encode(request.getPassword()), cryptUtil.encrypt(request.getApiKey()));
+        repo.save(user);
+        return user;
     }
 
     public LoginResponse verify(LoginRequest request) {

@@ -60,6 +60,7 @@ public class AnalyseScheduler {
                 futures.add(CompletableFuture.runAsync(() -> analyseAccount(account), accountExecutor));
             }
             futures.forEach(CompletableFuture::join);
+            accountExecutor.shutdownNow();
         }
         log.info("Analyse scheduler finished");
     }
@@ -75,8 +76,12 @@ public class AnalyseScheduler {
         securities.forEach(security -> {
             futures.add(CompletableFuture.runAsync(() -> {
                 var now = Instant.now();
-                var from = now.minus(365, ChronoUnit.DAYS);
+                var from = now.minus(12, ChronoUnit.HOURS);
                 var candles = quotesService.getHistoricCandles(security.getFigi(), from, now, CandleInterval.CANDLE_INTERVAL_1_MIN);
+                if (candles.isEmpty()) {
+                    log.warn("There is not a single candle!");
+                    return;
+                }
                 var request = new AnalyseRequest(candles, settings.getRiskFree(), settings.getMeanBenchmark());
                 var response = analyseService.analyse(request);
                 var analyse = MapperEntities.AnalyseResponseToAnalyse(response, from, now, account, security.getFigi());
