@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+'left to right direction
+
+actor :Пользователь: as user #green;line:green
+
+
+usecase (Войти в систему) as enterToSystem
+usecase (Получить информацию) as getInfo
+
+usecase (Получить JWT-токен) as getJWT
+usecase (Указать способ аутентификации) as setAuthType
+usecase (Информация о ценных бумагах) as getInfoSecurities
+usecase (Получить анализ) as getAnalyse
+
+usecase (Указать логин и пароль) as setLoginPassword
+usecase (Использовать JWT-токен) as useJWT
+usecase (Информация об инструменте) as getInfoInstrument
+usecase (Исторические свечи) as getHistoricCandle
+usecase (Анализ ценных бумаг) as analyseSecurities
+'usecase (Информация о фьючерсах) as getInfoFutures
+'usecase (Информация об опционах) as getInfoOptions
+
+usecase (Указать figi инструмента) as setFigi
+usecase (Указать бумаги) as setSecurity
+usecase (Указать безрисковую ставку) as setRiskFree
+usecase (Указать эталонную бумагу) as setBenchmark
+
+
+user -left-> enterToSystem
+user -right-> getInfo
+
+enterToSystem .down.> getJWT: " "include""
+enterToSystem .down.> setAuthType: " "include""
+
+setAuthType .down.> setLoginPassword: " "extend""
+setAuthType .down.> useJWT: " "extend""
+
+useJWT .up.> getJWT: " "include""
+
+getInfo <|-down- getInfoSecurities
+getInfo <|-right- getAnalyse
+'getInfo <|-down- getInfoFutures
+'getInfo <|-down- getInfoOptions
+
+getInfoSecurities <|-down- getInfoInstrument
+getInfoSecurities <|-down- getHistoricCandle
+
+getHistoricCandle .down.> setFigi: " "include""
+
+getInfoInstrument .down.> setFigi: " "include""
+
+getAnalyse <|-- analyseSecurities
+getAnalyse .down.> getInfoSecurities: " "include""
+
+analyseSecurities .right.> setSecurity: " "include""
+analyseSecurities .down.> setRiskFree: " "include""
+analyseSecurities .down.> setBenchmark: " "include""
+
+@enduml

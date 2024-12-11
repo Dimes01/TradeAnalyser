@@ -14,15 +14,22 @@ fun Application.configureRouting() {
             val request = call.receive<AnalyseRequest>()
             val service = AnalyseService()
             val profits = service.profitability(request.candles)
-            val result = AnalyseResponse(
-                profitability = profits.toList(),
-                mean = profits.average(),
-                stdDev = service.stdDev(profits),
-                coefVariation = service.coefVariation(profits),
-                coefSharp = service.coefSharp(profits, request.riskFree),
-                coefInformation = service.coefInformation(profits, request.meanBenchmark),
-                coefSortino = service.coefSortino(profits, request.riskFree)
-            )
+            val mean = profits.average()
+            val stdDev = service.stdDev(profits)
+            val result: AnalyseResponse =
+                if (mean == 0.0 || stdDev == 0.0)
+                    AnalyseResponse(profits.toList(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                else
+                    AnalyseResponse(
+                        profitability = profits.toList(),
+                        mean = mean,
+                        stdDev = stdDev,
+                        coefVariation = service.coefVariation(profits),
+                        coefSharp = service.coefSharp(profits, request.riskFree),
+                        coefInformation = service.coefInformation(profits, request.meanBenchmark),
+                        coefSortino = service.coefSortino(profits, request.riskFree)
+                    )
+            log.info(result.toString())
             call.respond(result)
         }
     }

@@ -1,3 +1,5 @@
+# Project exclude paths
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -40,3 +42,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+**/local.properties
+
+/API/src/main/resources/local.properties
+/build/
