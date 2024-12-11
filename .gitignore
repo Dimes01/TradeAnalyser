@@ -1,7 +1,7 @@
 # Project exclude paths
 /API/src/main/resources/local.properties
-/Analyse/.gradle/
-/Analyse/build/
-/API/.gradle/
-/API/build/
-/.idea/
+Analyse/.gradle/
+Analyse/build/
+API/.gradle/
+API/build/
+.idea/
