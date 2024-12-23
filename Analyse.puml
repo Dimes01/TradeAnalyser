@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor User
+participant API
+participant Database
+
+User -> API: Analyse Request
+API -> API: JWT authentication
+API -> Database: Get latest analyse
+Database -> Database: Filter analysis by time
+API <-- Database: Return latest analyse
+User <-- API: Analyse response
+
+@enduml

@@ -75,7 +75,7 @@ public class AnalyseScheduler {
         securities.forEach(security -> {
             futures.add(CompletableFuture.runAsync(() -> {
                 var now = Instant.now();
-                var from = now.minus(365, ChronoUnit.DAYS);
+                var from = now.minus(12, ChronoUnit.HOURS);
                 var candles = quotesService.getHistoricCandles(security.getFigi(), from, now, CandleInterval.CANDLE_INTERVAL_1_MIN);
                 var request = new AnalyseRequest(candles, settings.getRiskFree(), settings.getMeanBenchmark());
                 var response = analyseService.analyse(request);

@@ -1,25 +1,7 @@
-@startuml
-'!pragma layout smetana
-
-'!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-'!include DEVICONS/java.puml
-'!include DEVICONS/kotlin.puml
-
-Person(user, "Пользователь")
-System_Boundary(frontend, "Mobile app") {
-    Container(mobile_app, "Мобильное приложение", "Kotlin", )
-}
-System_Boundary(backend, "Backend") {
-    Container(api, "API", "Предоставляет методы для получения информации о портфеле")
-    Container(analyzer, "Analyzer", "Анализирует портфель")
-    ContainerDb(dbAnalysis, "База данных", "Используется для хранения предыдущих анализов")
-}
-
-Rel_R(user, mobile_app, "Uses", "HTTPS")
-BiRel_R(mobile_app, api, "Exchange data")
-BiRel_R(api, analyzer, "Analyse", "Uses to analyse new data")
-BiRel_D(api, dbAnalysis, "Previous data", "Uses to receive previous data")
-
-@enduml
+@startwbs
+* Система
+** Мобильное приложение
+** API
+** Analyzer
+** База данных
+@endwbs

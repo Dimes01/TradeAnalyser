@@ -1,54 +1,81 @@
 @startchen
 !pragma layout smetana
 
+left to right direction
+
 entity User {
-    login
-    password
-    firstName
-    lastName
-    roles
+'    login
+'    password
+'    firstName
+'    lastName
+'    roles
 }
 entity Client_App {
 }
-entity Data_Service {
+entity API_Service {
 }
 entity Analyse_Service {
 }
+entity Database {
+}
 
 relationship Sign_In {
-    login
-    password
+'    login
+'    password
 }
 relationship Sign_Up {
-    login
-    password
-    firstName
-    lastName
+'    login
+'    password
+'    firstName
+'    lastName
 }
 relationship Request_Info {
-    Start time
-    End time
-    Candle interval
+'    Start time
+'    End time
+'    Candle interval
 }
 relationship Response_Info {
-    Coefficient of variation
-    Sharpe ratio
-    Information ratio
-    Sortino ratio
+'    Coefficient of variation
+'    Sharpe ratio
+'    Information ratio
+'    Sortino ratio
 }
 relationship Get_Analyse {
 }
+relationship Make_Analyse {
+}
+relationship Get_Accounts {
+}
+relationship Create_Settings {
+}
+relationship Delete_Settings {
+}
+relationship Set_RiskFree {
+}
+
 
 User -1- Sign_In
-Sign_In -1- Client_App
 User -1- Sign_Up
+
+Sign_In -1- Client_App
 Sign_Up -1- Client_App
 
 Client_App -N- Request_Info
-Request_Info -1- Data_Service
 Client_App -N- Response_Info
-Response_Info -1- Data_Service
 
-Data_Service -1- Get_Analyse
-Get_Analyse -1- Analyse_Service
+Request_Info -1- API_Service
+Response_Info -1- API_Service
+
+API_Service -1- Get_Analyse
+API_Service -1- Get_Accounts
+API_Service -1- Create_Settings
+API_Service -1- Delete_Settings
+API_Service -1- Set_RiskFree
+
+Database -N- Get_Analyse
+Database -N- Get_Accounts
+Database -1- Set_RiskFree
+Database -N- Make_Analyse
+
+Analyse_Service -N- Make_Analyse
 @endchen

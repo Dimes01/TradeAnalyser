@@ -1,0 +1,48 @@
+@startgantt
+' Пример диаграммы Ганта для проекта с зависимостями
+Project starts 2025-01-01
+
+' Этап 1: Пользовательский интерфейс
+[Логика приложения] as [logic] requires 7 days
+[Интерфейс пользователя] as [ui] requires 30 days
+[Тестирование мобильного приложения] as [mobile_tests] requires 12 days
+
+' Этап 2: Серверная часть (Backend)
+[API] as [api] requires 14 days
+[Интеграция с внешними сервисами] as [integrations] requires 9 days
+[Анализатор] as [analyzer] requires 10 days
+[База данных] as [db] requires 13 days
+
+' Этап 3: Инфраструктура
+[Развертывание серверной части] as [deploy] requires 5 days
+[Настройка CI/CD] as [cicd] requires 5 days
+
+' Этап 4: Тестирование
+[Тестирование серверной части] as [server_tests] requires 10 days
+[Общие тесты] as [common_tests] requires 7 days
+
+' Этап 5: Внедрение
+[Развертывание приложения] as [app_deploy] requires 5 days
+[Развертывание серверной части в продакшен] as [prod_deploy] requires 5 days
+[Обучение пользователей] as [training] requires 5 days
+[Запуск системы] as [launch] requires 5 days
+
+' Установим зависимости с использованием starts at
+[ui] starts at [logic]'s end
+[mobile_tests] starts at [ui]'s end
+[api] starts at [logic]'s end
+[integrations] starts at [api]'s end
+[analyzer] starts at [logic]'s end
+[db] starts at [analyzer]'s end
+[deploy] starts at [db]'s end
+[deploy] starts at [integrations]'s end
+[cicd] starts at [deploy]'s end
+[server_tests] starts at [cicd]'s end
+[common_tests] starts at [server_tests]'s end
+[common_tests] starts at [mobile_tests]'s end
+[app_deploy] starts at [common_tests]'s end
+[prod_deploy] starts at [app_deploy]'s end
+[training] starts at [prod_deploy]'s end
+[launch] starts at [training]'s end
+
+@endgantt
