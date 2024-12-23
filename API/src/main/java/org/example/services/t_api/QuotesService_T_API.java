@@ -1,9 +1,8 @@
 package org.example.services.t_api;
 
-import io.grpc.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.HistoricCandleDTO;
+import org.example.dto.internal.HistoricCandleDTO;
 import org.example.dto.LastPriceDTO;
 import org.example.utilities.MapperDTO;
 import ru.tinkoff.piapi.contract.v1.CandleInterval;

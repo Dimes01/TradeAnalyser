@@ -1,5 +1,6 @@
 package org.example.services.auth;
 
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.auth.LoginRequest;
@@ -9,6 +10,7 @@ import org.example.dto.auth.RegisterResponse;
 import org.example.entities.User;
 import org.example.repositories.UserRepository;
 import org.example.utilities.CryptUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,21 +23,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @PropertySource("classpath:local.properties")
 public class UserService {
+    @Value("${spring.security.password-encoder.strength}")
+    private int strengthEncoder;
+
     private final JWTService jwtService;
+    private final CryptUtil cryptUtil;
+    private final BCryptPasswordEncoder encoder;
     private final AuthenticationManager authManager;
     private final UserRepository repo;
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public RegisterResponse register(RegisterRequest request) {
-        try {
-            var user = new User(request.getUsername(), encoder.encode(request.getPassword()), CryptUtil.encrypt(request.getApiKey()));
-            repo.save(user);
-            return new RegisterResponse(user.getUsername(), true, false);
-        } catch (Exception e) {
-            log.error("Method 'register': could not register user with username '{}'", request.getUsername());
-            return new RegisterResponse(request.getUsername(), false, false);
+    public User register(RegisterRequest request) {
+        var user = repo.findByUsername(request.getUsername());
+        if (user != null) {
+            throw new EntityExistsException(String.format("Username '%s' already exists!", request.getUsername()));
         }
+        user = new User(request.getUsername(), encoder.encode(request.getPassword()), cryptUtil.encrypt(request.getApiKey()));
+        repo.save(user);
+        return user;
     }
 
     public LoginResponse verify(LoginRequest request) {
@@ -45,5 +50,11 @@ public class UserService {
         } else {
             return new LoginResponse(null, false);
         }
+    }
+
+    public void changeToken(String username, String token) {
+        var user = repo.findByUsername(username);
+        user.setToken(token);
+        repo.save(user);
     }
 }

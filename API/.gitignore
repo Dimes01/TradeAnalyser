@@ -46,3 +46,4 @@ bin/
 **/local.properties
 
 /API/src/main/resources/local.properties
+/build/

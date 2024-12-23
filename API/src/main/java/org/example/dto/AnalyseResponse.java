@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AnalyseResponse {
     @JsonProperty("securities_id")
-    private String securitiesUid;
+    private String figi;
 
     @JsonProperty("date_from")
     private Instant dateFrom;

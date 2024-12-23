@@ -19,8 +19,8 @@ public class Analyse {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(name = "securities_uid")
-    private String securitiesUid;
+    @Column(name = "figi")
+    private String figi;
 
     @Column(name = "date_from")
     private Instant dateFrom;

@@ -2,6 +2,8 @@ spring:
   security:
     jwt:
       time-to-live: PT15M
+    password-encoder:
+      strength: 12
   datasource:
     initialization-mode: always
     name: postgres
@@ -11,7 +13,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:

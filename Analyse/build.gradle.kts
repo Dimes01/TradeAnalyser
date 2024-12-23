@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
+    id("jacoco")
+
 }
 
 group = "com.example"
@@ -41,4 +43,23 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+    }
+    classDirectories.setFrom(files(classDirectories.files.map {
+        fileTree(it) {
+            exclude("**/models/**")
+            exclude("**/entities/**")
+            exclude("**/dto/**")
+            exclude("**/utilities/**")
+            exclude("**/configurations/**")
+            exclude("**/repositories/**")
+            exclude("**/TradeAnalyserAuthApplication.java")
+        }
+    }))
 }

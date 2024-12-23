@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 public class UpdateScheduler {
     private final UserRepository userRepository;
     private final AccountService accountService;
+    private final CryptUtil cryptUtil;
 
     @Value("${services.main-scheduler.max-threads}")
     private int maxThreads;
@@ -32,29 +33,30 @@ public class UpdateScheduler {
     public void update() {
         log.info("Update scheduler started");
         var users = userRepository.findAll();
-        var accounts = new ConcurrentLinkedDeque<Account>();
         var futures = new LinkedList<CompletableFuture<Void>>();
+        if (!users.isEmpty())
+            log.info("Start updating users");
         try (var userExecutor = Executors.newFixedThreadPool(maxThreads)) {
             users.forEach(user -> {
                 futures.add(CompletableFuture.runAsync(() -> {
                     updateUser(user);
                 }, userExecutor));
             });
+            futures.forEach(CompletableFuture::join);
+            userExecutor.shutdownNow();
         }
-        futures.forEach(CompletableFuture::join);
         log.info("Update scheduler finished");
     }
 
     private void updateUser(User user) {
-        String token = null;
         try {
-            token = CryptUtil.decrypt(user.getToken());
+            String token = cryptUtil.decrypt(user.getToken());
+            if (accountService.updateAccountsByApiKey(token, user))
+                log.info("Successfully updated accounts of user!");
+            else
+                log.warn("Not successfully updated accounts of user!");
         } catch (Exception e) {
             log.error("Error while decrypting token");
         }
-        if (accountService.updateAccountsByApiKey(token))
-            log.info("Successfully updated accounts of user!");
-        else
-            log.warn("Not successfully updated accounts of user!");
     }
 }

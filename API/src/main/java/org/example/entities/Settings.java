@@ -16,6 +16,12 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    public Settings(Account account, double riskFree, double meanBenchmark) {
+        this.account = account;
+        this.riskFree = riskFree;
+        this.meanBenchmark = meanBenchmark;
+    }
+
     @OneToOne
     @JoinColumn(name = "account_id")
     private Account account;

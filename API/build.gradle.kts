@@ -25,7 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    implementation("ru.tinkoff.piapi:java-sdk-core:1.24")
+    implementation("ru.tinkoff.piapi:java-sdk-core:1.26")
 
     implementation("org.hibernate.orm:hibernate-core:6.6.3.Final")
 

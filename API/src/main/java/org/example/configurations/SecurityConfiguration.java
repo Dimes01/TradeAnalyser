@@ -2,6 +2,7 @@ package org.example.configurations;
 
 import org.example.utilities.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,24 +31,31 @@ public class SecurityConfiguration {
     @Autowired
     private UserDetailsService userDetailsService;
 
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder(
+        @Value("${spring.security.password-encoder.strength}") int strengthEncoder
+    ) {
+        return new BCryptPasswordEncoder(strengthEncoder);
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).
             authorizeHttpRequests(request -> request
-                .requestMatchers("/api/account/{username}/**")
+                .requestMatchers("/api/account/{username}/**", "/api/user/token/{username}/**")
                     .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
-                .requestMatchers("login", "register").permitAll()
-                .anyRequest().authenticated())
-            .httpBasic(Customizer.withDefaults())
+                .anyRequest().permitAll())
+                .httpBasic(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(@Autowired BCryptPasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetailsService);
 
         return provider;

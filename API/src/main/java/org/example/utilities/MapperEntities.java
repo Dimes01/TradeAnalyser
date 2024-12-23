@@ -36,7 +36,7 @@ public class MapperEntities {
         AnalyseResponse analyseResponse,
         Instant from, Instant to,
         org.example.entities.Account account,
-        String securitiesId
+        String figi
     ) {
         return Analyse.builder()
             .mean(analyseResponse.getMean())
@@ -46,7 +46,7 @@ public class MapperEntities {
             .coefInformation(analyseResponse.getCoefInformation())
             .coefSortino(analyseResponse.getCoefSortino())
             .account(account)
-            .securitiesUid(securitiesId)
+            .figi(figi)
             .dateTo(to)
             .dateFrom(from)
             .build();
